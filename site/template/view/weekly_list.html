@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="has-sidebar">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{$title}</title>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css"/>
+    <link rel="stylesheet" href="/css/datepicker.css"/>
+    <link rel="stylesheet" href="/css/all.css"/>
+    <link rel="stylesheet" href="/css/fineuploader-new.css"/>
+</head>
+<body>
+<div class="wrapper">
+    <div class="min-width-out">
+        <div class="min-width-in">
+            <div class="min-width">
+                <div class="header">
+                    <div class="content">
+                        <img src="img/logo.png" alt=""/>
+                        <a href="/?task=logout" class="out">退出</a>
+                        <dl class="header-infos">
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="main">
+                    <div class="sidebar-menu">
+                        <div class="left-menu">
+                            <ul class="left-nav">
+                                {include file="left_menu.html"}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="main-content-bottom">
+							{if $roleId == '2'}
+                            <div style="display: inline-block; vertical-align: top; width: 700px">
+                                <div class="btnUpload"></div>
+                            </div>
+                            {else}
+							<form method="get" action="" name="search_form" id="search_form">
+                            <div class="achievements">
+                                姓名：
+                                <select name="user_id" id="user_id" >
+                                    <option value="">请选择项目经理</option>
+                                    {foreach from=$managerList key=i item=row}
+                                    <option value="{$row.user_id}" {if $params.user_id == $row.user_id}selected{/if}>{$row.username}</option>
+                                    {/foreach}
+                                </select>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日期：
+                                <input type="text" class="form-unit" ued="{ 'datepicker':'true,false,year'}" name="start_date" id="start_date" value="{$params.start_date}">
+                                至
+                                <input type="text" class="form-unit" ued="{ 'datepicker':'true,false,year'}" name="end_date" id="end_date" value="{$params.end_date}">
+                                &nbsp;&nbsp;&nbsp;
+                                <a href="javascript:void(0);" class="search-btn">开始查询</a>
+                            </div>
+                            </form>
+                            {/if}
+                            <div class="table">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>工作周报文档（点击下载查看）</th>
+                                        {if $roleId != '2'}<th>项目经理</th>{/if}
+                                        <th>上传时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+									{if !empty($itemList)}
+									{foreach from=$itemList key=i item=row}
+                                    <tr>
+                                        <td><a href="{$row.name_url}" style="color: #60a6ee">{$row.name}</a></td>
+                                        {if $roleId != '2'}<td>{$row.username}</td>{/if}
+                                        <td>{$row.date}</td>
+                                        <td><a href="javascript:;" onclick="del('{$row.weekly_id}');" style="color:#db0d0d">删除</a></td>
+                                    </tr>
+									{/foreach}
+									{else}
+									<tr>
+                                        <td colspan="{if $roleId == '2'}3{else}4{/if}"width="50" height="50" align="center">暂无记录</td>
+                                    </tr>
+									{/if}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="push"></div>
+</div>
+
+<!--悬浮层-->
+<div id="popdiv" class="pop">
+    <span class="pp-title">提示</span>
+    <a href="javascript:BOX_remove('popdiv')" class="close"></a>
+    <table align="center">
+        <tr>
+            <td width="80"></td>
+            <td class="poptext"><span class=""></span></td>
+            <td width="80"></td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td>
+                <a class="btn-add" href="javascript:BOX_remove('popdiv')">确 定</a>
+            </td>
+            <td align="left"></td>
+        </tr>
+    </table>
+</div>
+
+<script src="/js/vendor/jquery-1.8.2.min.js"></script>
+<script src="/js/plugins.min.js"></script>
+<script src="/js/matrix.min.js"></script>
+<script src="/js/all.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/vendor/jquery.fineuploader-3.7.1.1.min.js"></script>
+<script>
+var _no = "";
+$(function() {
+   	{if $roleId == '2'}
+    $('.btnUpload').fineUploader({
+        request: {
+            endpoint: '?task=upload'
+        },
+        //validation: {
+        //    allowedExtensions: ['jpeg', 'jpg', 'png']
+        //},
+        multiple: false,
+        text: {
+            uploadButton: '<div>上传工作周报</div>'
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '?task=upload&uuid='
+        },
+        validation: {
+            sizeLimit: 1000 * (1024 * 1024)
+        },
+    }).on('complete', function (event, id, fileName, responseJson) {
+        if (responseJson.success) {
+            window.location.reload();//刷新当前页面
+        }else{
+            showInfo("error",responseJson.msg);
+        }
+    });
+    {else}
+    $(".hasDatepicker").attr("readonly", false);
+    $('.search-btn').click(function(){
+		$('#search_form').submit();
+	});
+	{/if}
+});
+
+function del(weekly_id) {
+	if (!confirm('删除不可恢复，确定要删除么？')) {
+		return;
+	}
+
+	var url = 'weekly_report.php?task=del&weekly_id=' + weekly_id;
+
+	{if $roleId != '2'}
+	if ($('#user_id').val() != '') {
+		url += '&user_id=' + $('#user_id').val();
+	}
+	if ($('#start_date').val() != '') {
+		url += '&start_date=' + $('#start_date').val();
+	}
+	if ($('#end_date').val() != '') {
+		url += '&end_date=' + $('#end_date').val();
+	}
+	{/if}
+
+	window.location.href = url;
+}
+
+</script>
+</body>
+</html>

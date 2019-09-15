@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html class="has-sidebar">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{$title}</title>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css"/>
+    <link rel="stylesheet" href="/css/datepicker.css"/>
+    <link rel="stylesheet" href="/css/all.css"/>
+    <link rel="stylesheet" href="/css/fineuploader-new.css"/>
+</head>
+<body>
+<div class="wrapper">
+    <div class="min-width-out">
+        <div class="min-width-in">
+            <div class="min-width">
+                <div class="header">
+                    <div class="content">
+                        <img src="/img/logo.png" alt=""/>
+
+                        <dl class="header-infos">
+                            Hi，{$username} <a href="javascript:void(0)" class="refresh">refresh</a> <a href="/?task=logout" class="out">退出</a>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="main">
+                    <div class="makepeople-main">
+                        <span class="mp-title">
+                            工单号<br />Serial number
+                        </span>
+                        {foreach from=$itemList key=i item=row}
+                        <span class="task" is_read="{$row.is_read}"><span class="job_id">{$row.job_no}</span><span class="state">{if $row.is_read=='1'}已读{else}未读{/if}</span></span>
+						{/foreach}
+                    </div>
+                    <div class="content">
+                        <div class="main-business-bottom">
+                            <div class="main-business-right">
+							{foreach from=$itemList key=i item=row}
+                               <div class="make-con-main">
+                                    <span class="arrow"></span>
+                                   <table>
+                                       <tr>
+                                           <td width="180">项目编号<br />project number</td>
+                                           <td>{$row.project_no}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>任务类型<br />task type</td>
+                                           <td>{$row.type}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>项目名称<br />project name</td>
+                                           <td class="red">{$row.project_name}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>客户名称<br />customer name</td>
+                                           <td>{$row.customer_name}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>项目描述<br />project description</td>
+                                           <td>{$row.project_desc}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>开始日期<br />start date</td>
+                                           <td>{$row.start_date}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>项目资料<br />project info</td>
+                                           <td>
+											  {if !empty($row.attachment)}
+											  {foreach from=$row.attachment key=j item=child}
+											   <a href="{$child.url}" target="_blank">{$child.name}</a>
+											  {/foreach}
+											  {/if}
+										   </td>
+                                       </tr>
+
+										<tr>
+                                           <td>友情提示<br />notice</td>
+                                           <td>
+											  如上传单个文件超过800M，则建议登录服务器共享文件夹进行手动上传，手动上传路径地址：<font color="red">D:\projects\{$row.project_no}\{$row.job_no}\</font>
+										   </td>
+                                       </tr>
+
+                                   </table>
+                                   <div class="make-undate ajax-updata-number">
+										<div class="b-main rel">
+											<div class="btnUpload"></div>
+										</div>
+									</div>
+                                   <div class="make-undate over">
+                                       <div class="b-main">
+                                           <a class="ajax-complete complete" style="margin-left:0px; width:105px; height:36px;" href="javascript:void (0)"><span>提 交<br /> Submit</span></a>
+                                       </div>
+                                   </div>
+                               </div>
+							{/foreach}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="push"></div>
+</div>
+
+<div class="b-main rel dis gd-demo">
+	<input type="file" id="aj-file" name="aj-file">
+	<span class="q-title w-120">上传任务 <br /> Upload task</span>
+	<input type="text" class="form-unit w-350">
+    <span class="control">
+        <span class="file-clear">&nbsp;</span>
+    </span>
+</div>
+
+<!--悬浮层-->
+<div id="popdiv" class="pop">
+    <span class="pp-title">提示</span>
+    <a href="javascript:BOX_remove('popdiv')" class="close"></a>
+    <table align="center">
+        <tr>
+            <td width="80"></td>
+            <td class="poptext"><span class=""></span></td>
+            <td width="80"></td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td>
+                <a class="btn-add" href="javascript:BOX_remove('popdiv')">确 定</a>
+            </td>
+            <td align="left"></td>
+        </tr>
+    </table>
+</div>
+
+<script src="/js/vendor/jquery-1.8.2.min.js"></script>
+<script src="/js/plugins.min.js"></script>
+<script src="/js/matrix.min.js"></script>
+<script src="/js/all.js"></script>
+<script src="/js/main.js"></script>
+<script src="js/interval.js"></script>
+<script src="js/vendor/jquery.fineuploader-3.7.1.min.js"></script>
+<script>
+    var _no = "";
+    var _data = [];
+    $(function () {
+		$('.refresh').click(function(){
+			window.location.href = '?t=' + Math.random();
+		});
+
+		$('.btnUpload').fineUploader({
+			request: {
+				endpoint: '?task=upload'
+			},
+			//validation: {
+			//    allowedExtensions: ['jpeg', 'jpg', 'png']
+			//},
+			multiple: true,
+			text: {
+				uploadButton: '<div>上传任务<br>Upload task</div>'
+			},
+			deleteFile: {
+				enabled: true,
+				endpoint: '?task=upload&uuid='
+			},
+            validation: {
+                sizeLimit: 1000 * (1024 * 1024)
+            },
+		}).on('complete', function (event, id, fileName, responseJson) {
+			if (responseJson.success) {
+                _data[id]=fileName;
+			}
+            console.log(_data)
+		});
+
+		$(".qq-upload-delete").live("hover",function(){
+            //console.log($(this).parents(".qq-upload-success").index())
+			_file = $(this).siblings(".qq-upload-file").text();
+		});
+
+        $(".pp-add").click(function(){
+            BOX_show('tcdiv');
+        })
+        $(".list a").click(function(){
+            BOX_show('chdiv');
+        })
+
+        $(".make-undate input[type='file']").live("change",function(){
+            $(this).siblings("input").val($(this).val());
+            $(this).siblings(".ajax-update").addClass("on");
+        })
+
+        $(".makepeople-main .task").each(function(e){
+            $(this).data("id",e);
+            $(".make-con-main:eq("+e+")").find(".arrow").css("top",130*(e+1)+"px");
+            $(".make-con-main:eq("+e+")").find(".btnUpload").data("jobNo",$(this).find(".job_id").text())
+        })
+        $(".makepeople-main .task").click(function () {
+            $(this).find(".state").text("已读");
+            $(".makepeople-main span").removeClass("on");
+            _no = $(this).find(".job_id").text();
+            $(this).addClass("on");
+            $(".make-con-main").hide();
+            $(".make-con-main:eq("+$(this).data("id")+")").fadeIn();
+
+            if($(this).data("read")==undefined){
+                var _this = $(this);
+                $.post('?task=read', {
+                    job_no:_no,
+                    formhash:'{$formhash}'
+                }, function(data){
+                    if (data.status == 'SUCCESS') {
+                        _this.data("read","1");
+                    }
+                }, 'json');
+            }
+        })
+        if($(".makepeople-main .task")[0]){
+            $(".makepeople-main .task")[0].click();
+        }
+        $(".ajax-updata-number .ajax-update").live("click",function(){
+            var _id = $(this).parents(".b-main").find("input[type='file']").attr("id");
+            ajaxFileUpload(_id,"?task=upload");
+        })
+        $(".complete").click(function(){
+            showInfo("success","请仔细确认您上传的文件是否正确！点击确认后，该工单号任务将默认完成并自动消失",function(){
+                $.post('?task=finished', {
+                    job_no:_no,
+                    formhash:'{$formhash}'
+                }, function(data){
+                    if (data.status == 'SUCCESS') {
+                        window.location.reload();
+                        // 刷新页面
+                    }else{
+                        alert(data.msg);
+                        BOX_remove('popdiv')
+                    }
+                }, 'json');
+            })
+
+        })
+    });
+</script>
+</body>
+</html>

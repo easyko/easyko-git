@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="has-sidebar">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{$title}</title>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css"/>
+    <link rel="stylesheet" href="/css/datepicker.css"/>
+    <link rel="stylesheet" href="/css/all.css"/>
+</head>
+<body>
+<div class="wrapper">
+    <div class="min-width-out">
+        <div class="min-width-in">
+            <div class="min-width">
+                <div class="header">
+                    <div class="content">
+                        <img src="/img/logo.png" alt=""/>
+
+                        <dl class="header-infos">
+                            Hi，{$username} <a href="javascript:void(0)" class="refresh">refresh</a> <a href="/?task=logout" class="out">退出</a>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="main">
+                    <div class="makepeople-main">
+                        <span class="mp-title">
+                            工单号<br />Serial number
+                        </span>
+                        {foreach from=$itemList key=i item=row}
+                        <span class="task">{$row.job_no}<span class="state">未读</span></span>
+						{/foreach}
+                    </div>
+                    <div class="content">
+                        <div class="main-business-bottom">
+                            <div class="main-business-right">
+							{foreach from=$itemList key=i item=row}
+                               <div class="make-con-main">
+                                    <span class="arrow"></span>
+                                   <table>
+                                       <tr>
+                                           <td width="180">项目编号<br />project number</td>
+                                           <td>{$row.project_no}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>任务类型<br />task type</td>
+                                           <td>{$row.type}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>项目名称<br />project name</td>
+                                           <td class="red">{$row.project_name}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>客户名称<br />customer name</td>
+                                           <td>{$row.customer_name}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>项目描述<br />project description</td>
+                                           <td>{$row.project_desc}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>开始日期<br />start date</td>
+                                           <td>{$row.start_date}</td>
+                                       </tr>
+                                       <tr>
+                                           <td>项目资料<br />project info</td>
+                                           <td>
+											  {if !empty($row.attachment)}
+											  {foreach from=$row.attachment key=j item=child}
+											   <a href="{$child}" target="_blank">{$child}</a>
+											  {/foreach}
+											  {/if}
+										   </td>
+                                       </tr>
+
+                                   </table>
+                                   <div class="make-undate ajax-updata-number">
+                                       <div class="b-main rel">
+                                           <input type="file" id="aj-file-{$i}-0" name="aj-file-{$i}-0">
+                                           <input type="text" class="form-unit w-350" placeholder="请点击浏览">
+                                           <a class="ajax-update off" href="javascript:void (0)" style="background-color: #f3f3f3; color: #666666; border: 1px solid #b5b5b5;"><span>确认<br />confirm</span></a>
+                                            <span class="control">
+                                                <span class="file-add">&nbsp;</span>
+                                            </span>
+                                       </div>
+                                   </div>
+                                   <div class="make-undate over">
+                                       <div class="b-main">
+                                           <a class="ajax-update complete" style="margin-left: 0px" href="javascript:void (0)"><span>提 交<br /> Submit</span></a>
+                                       </div>
+                                   </div>
+                               </div>
+							{/foreach}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="push"></div>
+</div>
+
+<div class="b-main rel dis gd-demo">
+    <input type="file" id="aj-file" name="aj-file">
+    <input type="text" class="form-unit w-350" placeholder="请点击浏览">
+    <a class="ajax-update" href="javascript:void (0)"><span>确认<br />confirm</span></a>
+    <span class="control">
+        <span class="file-clear">&nbsp;</span>
+    </span>
+</div>
+
+<!--悬浮层-->
+<div id="popdiv" class="pop">
+    <span class="pp-title">提示</span>
+    <a href="javascript:BOX_remove('popdiv')" class="close"></a>
+    <table align="center">
+        <tr>
+            <td width="80"></td>
+            <td class="poptext"><span class=""></span></td>
+            <td width="80"></td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td>
+                <a class="btn-add" href="javascript:BOX_remove('popdiv')">确 定</a>
+            </td>
+            <td align="left"></td>
+        </tr>
+    </table>
+</div>
+
+<script src="/js/vendor/jquery-1.8.2.min.js"></script>
+<script src="/js/plugins.min.js"></script>
+<script src="/js/matrix.min.js"></script>
+<script src="/js/all.js"></script>
+<script src="/js/main.js"></script>
+<script src="js/interval.js"></script>
+<script src="/js/ajaxfileupload/ajaxfileupload.js"></script>
+<script>
+    var _no = "";
+    $(function () {
+		$('.refresh').click(function(){
+			window.location.href = '?t=' + Math.random();
+		});
+
+        $(".pp-add").click(function(){
+            BOX_show('tcdiv');
+        })
+        $(".list a").click(function(){
+            BOX_show('chdiv');
+        })
+
+        $(".make-undate input[type='file']").live("change",function(){
+            $(this).siblings("input").val($(this).val());
+            $(this).siblings(".off").removeClass("off");
+        })
+
+        $(".makepeople-main .task").each(function(e){
+            $(this).data("id",e);
+            $(".make-con-main:eq("+e+")").find(".arrow").css("top",130*(e+1)+"px")
+        })
+        $(".makepeople-main .task").click(function () {
+            $(".makepeople-main span").removeClass("on");
+            _no = $(this).text();
+            $(this).addClass("on");
+            $(".make-con-main").hide();
+            $(".make-con-main:eq("+$(this).data("id")+")").fadeIn();
+
+            if($(this).data("read")==undefined){
+                var _this = $(this);
+                $.post('?task=read', {
+                    job_no:_no,
+                    formhash:'{$formhash}'
+                }, function(data){
+                    if (data.status == 'SUCCESS') {
+                        _this.data("read","1");
+                    }
+                }, 'json');
+            }
+        })
+        $(".makepeople-main .task")[0].click();
+        $(".ajax-updata-number .ajax-update").live("click",function(){
+            var _id = $(this).parents(".b-main").find("input[type='file']").attr("id");
+            ajaxFileUpload(_id,"?task=upload");
+        })
+        $(".complete").click(function(){
+            $.post('?task=finished', {
+                job_no:_no,
+                formhash:'{$formhash}'
+            }, function(data){
+                if (data.status == 'SUCCESS') {
+                    window.location.reload();
+                    // 刷新页面
+                }else{
+                    showInfo("error",data.msg);
+                }
+            }, 'json');
+        })
+    });
+</script>
+</body>
+</html>

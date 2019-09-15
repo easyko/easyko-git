@@ -1,0 +1,38 @@
+<li class="left-nav-item">
+	<dl{if $menuName == 'project'} class="current"{/if}>
+		<dt><a href="project.php">项目查询</a></dt>
+	</dl>
+</li>
+{if ($roleId == '0' || $roleId == '2')}
+<li class="left-nav-item">
+	<dl{if $menuName == 'project_create'} class="current"{/if}>
+		<dt><a href="project_create.php">创建项目</a></dt>
+	</dl>
+</li>
+{/if}
+{if $roleId == '0'}
+<li class="left-nav-item">
+	<dl{if $menuName == 'member'} class="current"{/if}>
+		<dt><a href="member.php">人员管理</a></dt>
+	</dl>
+</li>
+{/if}
+{if ($roleId == '0' || $roleId == '1')}
+<li class="left-nav-item">
+	<dl{if $menuName == 'performance'} class="current"{/if}>
+		<dt><a href="performance.php">绩效考核</a></dt>
+	</dl>
+</li>
+{/if}
+{if ($roleId == '0' || $roleId == '1' || $roleId == '2')}
+<li class="left-nav-item">
+	<dl{if $menuName == 'weekly_report'} class="current"{/if}>
+		<dt><a href="weekly_report.php">工作周报</a></dt>
+	</dl>
+</li>
+<li class="left-nav-item">
+	<dl{if $menuName == 'project_report'} class="current"{/if}>
+		<dt><a href="project_report.php">项目总结</a></dt>
+	</dl>
+</li>
+{/if}

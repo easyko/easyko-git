@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html class="has-sidebar">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{$title}</title>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css"/>
+    <link rel="stylesheet" href="/css/datepicker.css"/>
+    <link rel="stylesheet" href="/css/all.css"/>
+</head>
+<body>
+<div class="wrapper">
+    <div class="min-width-out">
+        <div class="min-width-in">
+            <div class="min-width">
+                <div class="header">
+                    <div class="content">
+                        <img src="/img/logo.png" alt=""/>
+                        <a href="/?task=logout" class="out">退出</a>
+                        <dl class="header-infos">
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="main">
+                    <div class="sidebar-menu">
+                        <div class="left-menu">
+                            <ul class="left-nav">
+                                {include file="left_menu.html"}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="main-content-bottom">
+                            <div class="achievements">
+                                姓名：
+                                <select id="user_id" name="user_id">
+									{foreach from=$userList key=i item=row}
+                                    <option value="{$row.user_id}" {if $userId == $row.user_id}selected{/if}>{$row.username}</option>
+                                    {/foreach}
+                                </select>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日期：
+                                <select name="date" id="date">
+									{foreach from=$dateList key=i item=row}
+                                    <option value="{$i}" {if $date == $i}selected{/if}>{$row}</option>
+                                    {/foreach}
+                                </select>
+                                &nbsp;&nbsp;&nbsp;
+                                <a class="search-btn" href="javascript:void(0);">开始查询</a>
+                            </div>
+                            <div>
+                                <table class="table1">
+                                    <thead>
+                                    <tr>
+                                        <th>姓名</th>
+                                        <th>项目编号</th>
+                                        <th>项目名称</th>
+                                        <th>工单号</th>
+                                        <th>任务类型</th>
+                                        <th>计划开始时间</th>
+                                        <th>计划结束时间</th>
+                                        <th>实际完成时间</th>
+                                        <th>提交文件</th>
+                                        <th>工作单元</th>
+                                        <th>计划分值</th>
+                                        <th>实际分值</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {if $itemList}
+									{foreach from=$itemList key=i item=row}
+									{if count($row.list) == 1}
+										<tr>
+											<td>{$row.username}</td>
+											<td><a href="project.php?task=detail&product_no={$row.project_no}" target="_blank" style="color: #60a6ee">{$row.project_no}</a></td>
+											<td>{$row.project_name}</td>
+											<td>{$row.list.0.job_no} <input type="hidden" name="jobNo" value="{$row.list.0.job_no}"></td>
+											<td>{$row.list.0.type}</td>
+											<td>{$row.list.0.start_time}</td>
+											<td>{$row.list.0.end_time}</td>
+											<td>{$row.list.0.finished_time}</td>
+											<td class="att">{$row.list.0.attachment}</td>
+											<td>{$row.list.0.work_unit}</td>
+											<td>{$row.list.0.plan_score}</td>
+											<td><span class="see">{$row.list.0.real_score}</span><span class="edit" style="display: none"><input
+                                                    type="text" value="{$row.list.0.real_score}" class="form-unit" name="edit" style="width: 20px; padding: 5px 10px;"> </span></td>
+											<td><span class="see link">编辑</span><span class="edit submit link" style="display: none">提交</span></td>
+										</tr>
+                                    {else}
+										{foreach from=$row.list key=j item=child}
+										<tr>
+											{if $j == 0}<td rowspan="{count($row.list)}">{$row.username}</td>
+											<td rowspan="{count($row.list)}"><a href="project.php?task=detail&product_no={$row.project_no}" target="_blank" style="color: #60a6ee">{$row.project_no}</a></td>
+											<td rowspan="{count($row.list)}">{$row.project_name}</td>
+											{/if}
+											<td>{$child.job_no}<input type="hidden" name="jobNo" value="{$child.job_no}"></td>
+											<td>{$child.type}</td>
+											<td>{$child.start_time}</td>
+											<td>{$child.end_time}</td>
+											<td>{$child.finished_time}</td>
+											<td class="att">{$child.attachment}</td>
+											<td>{$child.work_unit}</td>
+											<td>{$child.plan_score}</td>
+                                            <td><span class="see">{$child.real_score}</span><span class="edit" style="display: none"><input
+                                                    type="text" value="{$row.list.0.real_score}" class="form-unit"  name="edit" style="width: 20px; padding: 5px 10px;"></span></td>
+                                            <td><span class="see link">编辑</span><span class="edit submit link" style="display: none">提交</span></td>
+										</tr>
+										{/foreach}
+                                    {/if}
+                                    {/foreach}
+                                    {else}
+                                    <tr>
+										<td colspan="14" align="center" height="80">暂无记录</td>
+									</tr>
+                                    {/if}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td style="background-color: #f3f3f3;"> 合计： </td>
+                                            <td colspan="8" style="background-color: #f3f3f3;">   </td>
+                                            <td style="color: red; font-weight: bold; background-color: #f3f3f3;"> {$totalList.work_unit} </td>
+                                            <td bgcolor="" style="color: red; font-weight: bold; background-color: #f3f3f3;"> {$totalList.plan_score} </td>
+                                            <td bgcolor="#f3f3f3" style="color: red; font-weight: bold; background-color: #f3f3f3;"> {$totalList.real_score} </td>
+                                            <td style="color: red; font-weight: bold; background-color: #f3f3f3;">&nbsp;</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <a class="btn-primary btn m-t-10" style="border: 1px solid #8c8b8b" href="javascript:void(0)">
+                                    <span class="export">下载Excel格式</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="push"></div>
+</div>
+<!--悬浮层-->
+<div id="tcdiv" class="pop">
+    <div class="main pd">
+        <p class="txt warning">确认新增商户吗？</p>
+    </div>
+    <div class="btns">
+        <a href="javascript:BOX_remove('tcdiv')" class="btn1 confirm">确定</a>
+        <a href="javascript:BOX_remove('tcdiv')" class="btn1 confirm">取消</a>
+    </div>
+    <a href="javascript:BOX_remove('tcdiv')" class="close"></a>
+</div>
+
+<div id="popdiv" class="pop">
+    <span class="pp-title">提示</span>
+    <a href="javascript:BOX_remove('popdiv')" class="close"></a>
+    <table align="center">
+        <tr>
+            <td width="80"></td>
+            <td class="poptext"><span class=""></span></td>
+            <td width="80"></td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td>
+                <a class="btn-add" href="javascript:BOX_remove('popdiv')">确 定</a>
+            </td>
+            <td align="left"></td>
+        </tr>
+    </table>
+</div>
+
+
+<script src="/js/vendor/jquery-1.8.2.min.js"></script>
+<script src="/js/plugins.min.js"></script>
+<script src="/js/matrix.min.js"></script>
+<script src="/js/all.js"></script>
+<script src="/js/main.js"></script>
+<script>
+$(function () {
+	document.onkeydown = function(event){
+		e = event ? event : (window.event ? window.event : null);
+		if (e.keyCode == 13) {
+			$('.table1 tbody td span.edit').each(function(){
+				alert($(this).attr('display'));
+			});
+			//$(".table1 .submit").click();
+		}
+	}
+
+	var url = 'performance.php';
+
+    $(".table1 .see").click(function(){
+        $(this).parents("tr").find(".see").hide();
+        $(this).parents("tr").find(".edit").show();
+    })
+    $(".table1 .submit").click(function(){
+        var _this = $(this).parents("tr");
+        var _jobNo = $(this).parents("tr").find("input[name='jobNo']").val();
+        var _editfz = $(this).parents("tr").find("input[name='edit']").val();
+
+        if (_editfz == '') {
+            showInfo("error","请填写实际分值！");
+            return;
+        }else if(isNaN(_editfz)){
+            showInfo("error","实际分值请填写数字！");
+            return;
+        }
+
+        $.post('?task=update', {
+            job_no:_jobNo,
+            real_score:_editfz
+        }, function(data){
+            if (data.success == 1) {
+                _this.find(".see:eq(0)").text(_editfz);
+                _this.find(".see").show();
+                _this.find(".edit").hide();
+                var _no = 0;
+                $(".table1 tbody tr").each(function(){
+                    if($(this).find(".see:eq(0)").text() =="" || $(this).find(".see:eq(0)").text() == undefined || $(this).find(".see:eq(0)").text() == null){
+                    }else{
+                        console.log($(this).find(".see:eq(0)").text());
+                        _no += parseFloat($(this).find(".see:eq(0)").text());
+                    }
+                })
+                $(".table1 tfoot td:eq(4)").text(_no);
+                showInfo("success",data.msg)
+            }else{
+                showInfo("error", data.msg);
+            }
+        }, 'json');
+    })
+	$('.search-btn').click(function(){
+		var date = $('#date').val();
+		var user_id = $('#user_id').val();
+
+		if (date != '') {
+			if (url.indexOf('?') != -1) {
+				url += '&date=' + date;
+			} else {
+				url += '?date=' + date;
+			}
+		}
+
+		if (user_id != '') {
+			if (url.indexOf('?') != -1) {
+				url += '&user_id=' + user_id;
+			} else {
+				url += '?user_id=' + user_id;
+			}
+		}
+
+		window.location.href = url + '&t=' + Math.random();
+	});
+
+	$('.export').click(function(){
+		var date = $('#date').val();
+		var user_id = $('#user_id').val();
+
+		if (date != '') {
+			if (url.indexOf('?') != -1) {
+				url += '&date=' + date;
+			} else {
+				url += '?date=' + date;
+			}
+		}
+
+		if (user_id != '') {
+			if (url.indexOf('?') != -1) {
+				url += '&user_id=' + user_id;
+			} else {
+				url += '?user_id=' + user_id;
+			}
+		}
+
+		window.location.href = url + '&export&t=' + Math.random();
+	});
+});
+</script>
+</body>
+</html>

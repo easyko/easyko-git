@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>购买</title>
+    <link rel="stylesheet" href="css/css.css">
+    <script src="js/jquery-1.12.3.min.js"></script>
+    <script>
+        $(function(){
+            //版本切换
+            $(".edition li").click(function(){
+                $(this).addClass("active").siblings().removeClass("active");
+            });
+            //第一步提胶支付
+            $(".totalPrice button").click(function(){
+                $(".step1").hide();
+                $(".step2").show();
+                $(".purTop li:eq(1)").addClass("active").siblings().removeClass("active");
+            });
+            //第二步立即支付
+            $(".payment").click(function(){
+                $(".completed").show();
+            });
+            //切换支付方式
+            $(".choice li").click(function(){
+                $(this).addClass("active").siblings().removeClass("active");
+            });
+            //取消
+            $(".cancel").click(function(){
+                $(".completed").hide();
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="purTop">
+    <ul>
+        <li class="active">
+            <p>1</p>
+            <p>填写购买信息，提交订单</p>
+        </li>
+        <li>
+            <p>2</p>
+            <p>确认订单，付款</p>
+        </li>
+        <li>
+            <p>3</p>
+            <p>完成支付，开始使用</p>
+        </li>
+    </ul>
+    <div class="line1"></div>
+    <div class="line2"></div>
+</div>
+<div class="content step1">
+    <div class="contentTop">
+        <img src="img/car.png">
+        <p>选择购买版本、成员数量及年限</p>
+    </div>
+    <p class="businessName">企业（团队）名称：<span>上海银河创意</span></p>
+    <div class="edition">
+        <p>选择版本：</p>
+        <ul>
+            <li class="active">团队版</li>
+            <li>企业版</li>
+        </ul>
+    </div>
+    <div class="memberNum">
+        <p>成员数量：</p>
+        <input type="number" value="3">
+        <p>人</p>
+    </div>
+    <div class="purLife">
+        <p>购买年限：</p>
+        <ul>
+            <li><input name="purLife" type="radio" id="radio1" checked><label for="radio1">1年</label></li>
+            <li><input name="purLife" type="radio" id="radio2"><label for="radio2">2年</label></li>
+            <li><input name="purLife" type="radio" id="radio3"><label for="radio3">3年</label></li>
+            <li><input name="purLife" type="radio" id="radio4"><label for="radio4">5年</label></li>
+        </ul>
+    </div>
+    <div class="price">
+        <p><span>299元</span>/人/年 * <span>13</span>人 * <span>1</span>年 = <span>160000</span>元</p>
+        <p>购买后企业（团队）可容纳<span>13</span>个成员，期限为<span>一</span>年，到期时间为<span>2018-08-20</span></p>
+    </div>
+    <div class="totalPrice">
+        <p>总计：<span>16000</span>元</p>
+        <button></button>
+    </div>
+</div>
+<div class="content step2">
+    <div class="contentTop">
+        <img src="img/car.png">
+        <p>订单详情：12345679123658525</p>
+    </div>
+    <div class="detailContent">
+        <p><span>企业团队名称：</span><span>上海银河创意</span></p>
+        <p><span>选择版本：</span><span>团队版</span></p>
+        <p><span>成员数量：</span><span>13</span></p>
+        <p><span>购买年限：</span><span>1年</span></p>
+        <p><span>总计：</span><span>16000元</span></p>
+        <div class="actual">
+            <p><span>实付：</span><span>13000元</span></p>
+            <div class="code">
+                <input type="checkbox">
+                <span>使用推荐码</span>
+                <input type="text">
+            </div>
+        </div>
+    </div>
+    <div class="choice">
+        <p>选择购买方式：</p>
+        <ul>
+            <li class="active"></li>
+            <li></li>
+        </ul>
+    </div>
+    <button class="payment">立即支付</button>
+</div>
+<div class="completed">
+    <div class="comContent">
+        <p>已完成在线支付？</p>
+        <p>请先进行在线支付，如已完成支付，请点击完成。</p>
+        <button class="cancel"></button>
+        <ul>
+            <li>立即支付</li>
+            <li>支付遇到问题</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

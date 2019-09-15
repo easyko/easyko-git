@@ -1,0 +1,56 @@
+body {font-size:12px;line-height:20px;text-align:left;height:100%;padding:0;margin:0;}
+div {text-align:left}
+html{overflow-x:hidden;}
+html,body,img,hr,h1,ul,li {margin:0;padding:0}
+p{text-indent:28px;}
+img{border:0;}
+input,option,select {font-size:12px;}
+center{margin:0 auto;float:none;clear:both;}
+span{color:red;font-size:16px;padding-left:10px}
+form{margin:0px;}
+hr{width:100%;}
+textarea {width:355px;height:200px;clear:both;}
+a:active {	text-decoration: underline}
+a:visited {	color:black; text-decoration: none}
+a:hover {	color:blue; text-decoration:none}
+a:link {	color:black; text-decoration: none}
+
+.main{width:98%;background: #C2C2C2;}
+.inter{padding:10px 0px 10px 0px;background: #ECECEC;width:100%!important;width:96%;float:left;border:2px solid #C2C2C2;}
+
+.inter1{margin:0% 2% 0% 2%;background:white;width:96%!important;width:100%;float:left;}
+.title1{width:100%;font-size:14px;padding-top:4px;background:#BFBFBF;height:22px;border-bottom:1px solid #696A6A;float:left;clear:both;margin-bottom:4px;}
+
+.left{padding:2px 0px 2px 0px;float:left;width:120px;clear:left;background: white;text-align:right;margin-right:10px}
+.right{padding:2px 0px 2px 0px;float:left;clear:right;background: white;text-align:left;}
+
+
+.rowspan{float:left;width:100%;clear:left;text-align:left;background: white;padding:5px 0px 5px 120px}
+.center{text-align:center;}
+.rowleft{float:left;padding:0px 5px 0px 5px;}
+
+.sub_title{font-size:14px;float:left;width:150px;clear:both;background: white;text-align:right;padding:5px 0px 5px 0px}
+
+
+#listtable { width: 90%; padding: 0; margin: 0; } 
+
+
+th{ 
+	font: bold 12px "Trebuchet MS", "Verdana", "Arial", "Helvetica", "sans-serif"; 
+    border-right: 1px solid #E6EAE9; 
+    border-bottom: 1px solid #E6EAE9; 
+    border-top: 1px solid #E6EAE9; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+    text-align: left; 
+    padding: 6px 6px 6px 12px; 
+    background: #bfbfbf; 
+} 
+
+td{ 
+    border-right: 1px solid #E6EAE9; 
+    border-bottom: 1px solid #E6EAE9; 
+    background: #fff; 
+    font-size:11px; 
+    padding: 6px 6px 6px 12px; 
+} 

@@ -1,0 +1,37 @@
+2019-09-03 00:37:40 - PHP Notice:  Undefined variable: agafds in /opt/www/easyku_v0.0.1/index.php on line 48
+2019-09-03 00:52:01 - PHP Notice:  A custom error has been triggered in /opt/www/easyku_v0.0.1/index.php on line 48
+2019-09-03 00:52:06 - PHP Notice:  A custom error has been triggered in /opt/www/easyku_v0.0.1/index.php on line 48
+2019-09-03 00:59:31 - PHP Notice:  Undefined variable: adfa in /opt/www/easyku_v0.0.1/index.php on line 47
+2019-09-03 01:21:16 - {"status":"1","msg":"OK","requestId":"82BFD5FE-3F54-4EA9-9855-283702684AB8","code":"OK","bizId":"647717967444875908^0"}
+2019-09-03 09:16:14 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 152
+2019-09-03 09:20:25 - PHP Notice:  Undefined property: LoginController::$session in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 152
+2019-09-03 09:20:25 - PHP Notice:  Trying to get property of non-object in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 152
+2019-09-03 09:21:13 - PHP Notice:  Undefined property: LoginController::$session in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 152
+2019-09-03 09:21:13 - PHP Notice:  Trying to get property of non-object in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 152
+2019-09-03 09:21:32 - PHP Notice:  Undefined index: request_id in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 153
+2019-09-03 09:33:58 - PHP Notice:  Undefined index: verificationi_code in F:\www\easyku_v0.0.1\site\class\Model\Login.php on line 34
+2019-09-03 09:34:18 - PHP Notice:  Undefined index: verificationi_code in F:\www\easyku_v0.0.1\site\class\Model\Login.php on line 34
+2019-09-03 09:40:46 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:41:23 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:41:35 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:41:50 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:43:57 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:44:24 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:44:27 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:45:36 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:45:37 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:45:43 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:45:44 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:46:21 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:47:56 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:49:09 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:49:09 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:49:10 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:51:25 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:51:25 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:51:40 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:51:50 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:52:14 - PHP Notice:  Undefined variable: model in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 134
+2019-09-03 09:53:40 - PHP Notice:  Undefined property: LoginController::$languag in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 154
+2019-09-03 09:53:52 - PHP Notice:  Undefined property: LoginController::$languag in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 154
+2019-09-03 09:55:32 - PHP Notice:  Undefined property: LoginController::$languag in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 154

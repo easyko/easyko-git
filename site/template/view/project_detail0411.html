@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html class="has-sidebar">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{$title}</title>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css"/>
+    <link rel="stylesheet" href="/css/datepicker.css"/>
+    <link rel="stylesheet" href="/css/all.css"/>
+</head>
+<body>
+<div class="wrapper">
+    <div class="min-width-out">
+        <div class="min-width-in">
+            <div class="min-width">
+                <div class="header">
+                    <div class="content">
+                        <img src="/img/logo.png" alt=""/>
+                        <a href="/?task=logout" class="out">退出</a>
+                    </div>
+                </div>
+
+                <div class="main">
+                    <div class="sidebar-menu">
+                        <div class="left-menu">
+                            <ul class="left-nav">
+                                <li class="left-nav-item">
+                                    <dl class="current">
+                                        <dt><a href="project.php">项目查询</a></dt>
+                                    </dl>
+                                </li>
+                                <li class="left-nav-item">
+                                    <dl>
+                                        <dt><a href="project.php?task=create">创建项目</a></dt>
+                                    </dl>
+                                </li>
+                                {if $roleId == '1'}
+                                <li class="left-nav-item">
+                                    <dl>
+                                        <dt><a href="member.php">人员管理</a></dt>
+                                    </dl>
+                                </li>
+                                {/if}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="main-business-bottom">
+
+                            <div class="main-business-right">
+                                <form action="123.html">
+                                <div class="select-main">
+
+                                    <div class="modeStyle3">
+                                        <div class="qx-cs">
+                                            <div class="b-main">
+                                                <span class="q-title w-120"><span class="dd">*</span> 项目编号：</span>
+                                                {$detail.project_no}
+                                            </div>
+                                            <br/>
+
+                                            <div class="b-main">
+                                                <span class="q-title w-120"><span class="dd">*</span> 项目名称：</span>
+                                                <input type="text" class="form-unit w-265" name="project_name" id="project_name" value="{$detail.project_name}">
+                                            </div>
+                                            <br/>
+
+                                            <div class="b-main">
+                                                <span class="q-title w-120"><span class="dd">*</span> 客户名称：</span>
+                                                <input type="text" class="form-unit w-265" name="customer_name" id="customer_name" value="{$detail.customer_name}">
+                                            </div>
+                                            <br/>
+
+                                            <div class="b-main">
+                                                <span class="q-title w-120"><span class="dd">*</span> 开始日期：</span>
+                                                {$detail.start_date}
+                                            </div>
+                                            <br/>
+
+                                            <div class="b-main">
+                                                <span class="q-title w-120"><span class="dd">*</span> 项目经理：</span>
+                                                {if $roleId == '2'}
+												{$username}
+                                                {else}
+                                                <input type="text" class="form-unit w-265 manager" name="project_manager" id="project_manager" value="{$detail.manager_name}">
+                                                {/if}
+                                                 <input type="hidden" name="project_manager_id" id="project_manager_id" value="{if $detail.project_manager_id}{$detail.project_manager_id}{else}0{/if}">
+                                            </div>
+                                            <br/>
+
+                                            <div class="b-main">
+                                                <span class="q-title w-120"><span class="dd">*</span> 项目状态：</span>
+                                                <select class="form-unit interval-select" style="width:290px;" name="status" id="status">
+                                                    <option value="">请选择</option>
+                                                    {foreach from=$projectStat key=i item=row}
+                                                    <option value="{$i}"{if $i == $detail.status} selected{/if}>{$row}</option>
+                                                    {/foreach}
+                                                </select>
+                                                <input type="text" class="form-unit w-265" placeholder="备注说明（限30个字符）" maxlength="30" name="comment" id="comment" value="{$detail.comment}">
+                                            </div>
+                                        </div>
+                                        <div class="qx-cs write">
+
+                                            <div class="b-con">
+                                                <span class="q-title w-120 name" style="vertical-align: top; padding-top: 6px"><span class="dd">*</span> 分配执行人员：</span>
+                                                <span class="con">
+                                                {foreach from=$detail.usersList key=j item=child}
+                                                <span class="text"> <span class="p-con">执行人员：{$child.username}</span><span class="p-con">任务类型：{$child.type}</span><span class="p-con">工单号：{$child.job_no}</span><span class="p-con">
+												附件：
+                                                {if !empty($child.attachment)}
+                                                {foreach from=$child.attachment key=i item=c}
+                                                <a href="{$c}" title="{$c|regex_replace:'/\/upload\//':''}" target="_blank"></a>
+												{/foreach}
+												{else}--{/if}
+                                                 </span>
+                                                 <span class="p-con">
+												上传时间：
+                                                 {if $child.finished_time == ''}
+                                                 -- {else}
+                                                 {$child.finished_time}
+                                                 {/if}</span></span>
+                                                {/foreach}
+                                                </span>
+                                            </div>
+
+                                            <div class="b-con">
+                                                <span class="q-title w-120 name"></span>
+                                                <span class="fp-list first">
+                                                    <input type="text" class="form-unit staff" style="width: 200px" placeholder="请选择人员>>" row-index="0" name="people0">
+                                                    <input type="hidden" name="users_0_userid" id="users_0_userid" value="">
+                                                    <select class="form-unit w-141 interval-select" id="task0" value=""  name="task0">
+                                                        <option value="">任务类型</option>
+                                                    </select>
+                                                    <input type="text" class="form-unit w-95"  name="NO0" id="NO0" value="" readonly />
+                                                    <span class="q-title dd create_user-no">生成工单号</span>
+                                                </span>
+                                                <span class="control">
+                                                    <span class="add">&nbsp;</span>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="qx-cs">
+                                            <div class="b-main">
+                                                <span class="q-title w-120">项目描述：</span>
+                                                <textarea class="form-unit" style="width:612px; height:80px;" placeholder="请输入项目背景或要求（限500个字符）" maxlength="500" name="project_desc" id="project_desc">{$detail.project_desc}</textarea>
+                                            </div>
+                                            <br/>
+
+                                            <div class="update">
+                                                <div class="b-main rel">
+                                                    <input type="file" name="aj-file0" id="aj-file0"/>
+                                                    <span class="q-title w-120"><span class="dd">*</span> 上传项目资料：</span>
+                                                    <input type="text" class="form-unit w-265" placeholder="请选择上传文件">
+                                                    <a href="javascript:void(0)" data-type="projectFile" class="ajax-update"><span>确认上传</span></a>
+                                                    <span class="control">
+                                                        <span class="file-add">&nbsp;</span>
+                                                    </span>
+                                                </div>
+                                                <br/>
+                                            </div>
+
+                                            <div class="b-con">
+                                                <span class="q-title w-120 name" style="vertical-align: top; padding-top: 6px"> 项目资料：</span>
+                                                <span class="con">
+                                                    <span class="text">
+                                                        <span class="p-con">
+                                                        {if !empty($detail.attachment)}
+												        {foreach from=$detail.attachment key=j item=child}
+                                                        <a target="_blank" title="{$child|regex_replace:'/\/upload\//':''}" href="{$child}"></a>
+                                                        {/foreach}
+                                                        {else}
+                                                        --
+                                                        {/if}
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                                </span>
+                                            </div>
+
+                                            <div class="update-ht">
+                                                <div class="b-main rel">
+                                                    <input type="file" name="ht-file0" id="ht-file0"/>
+                                                    <span class="q-title w-120">上传合同资料：</span>
+                                                    <input type="text" class="form-unit w-265" placeholder="请选择上传文件">
+                                                    <a href="javascript:void(0)" data-type="projectContractFile" class="ajax-update"><span>上传合同</span></a>
+                                                    <span class="control">
+                                                        <span class="file-add">&nbsp;</span>
+                                                    </span>
+                                                </div>
+                                                <br/>
+                                            </div>
+
+                                            <div class="b-con">
+                                                <span class="q-title w-120 name" style="vertical-align: top; padding-top: 6px"> 合同资料：</span>
+                                                <span class="con">
+                                                    <span class="text">
+                                                        <span class="p-con">
+                                                            {if !empty($detail.contract_attachment)}
+                                                            {foreach from=$detail.contract_attachment key=j item=child}
+                                                            <a target="_blank" title="{$child|regex_replace:'/\/upload\//':''}" href="{$child}"></a>
+                                                            {/foreach}
+                                                            {else}
+															--
+                                                            {/if}
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                                </span>
+                                            </div>
+
+                                            <div class="b-main">
+                                                <span class="q-title w-120">合同号：</span>
+                                                <input type="text" class="form-unit w-265" name="contract_no" id="contract_no" value="{$detail.contract_no}">
+                                            </div>
+                                            <br/>
+                                            <div class="b-main">
+                                                <span class="q-title w-120">合同金额：</span>
+                                                <input type="text" class="form-unit w-265" name="contract_amount" id="contract_amount" value="{$detail.contract_amount}">
+                                            </div>
+                                            <br/>
+                                            <div class="b-main">
+                                                <span class="q-title w-120">实际收款：</span>
+                                                <input type="text" class="form-unit w-265" name="real_amount" id="real_amount" value="{$detail.real_amount}">
+                                            </div>
+                                            <br/>
+                                            <div class="b-main">
+                                                <span class="q-title w-120">第三方费用：</span>
+                                                <input type="text" class="form-unit w-265" name="other_amount" id="other_amount" value="{$detail.other_amount}">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="qx-btn">
+                                    <a href="javascript:void (0)" class="btn btn-primary btn-submit btn-c"><span>修改项目</span></a>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="push"></div>
+</div>
+<!--悬浮层-->
+<div id="tcdiv" class="pop">
+    <span class="pp-title">提示</span>
+    <a href="javascript:BOX_remove('tcdiv')" class="close"></a>
+    <table align="center">
+        <tr>
+            <td width="80"></td>
+            <td><span class="success">您创建的项目已成功！</span></td>
+            <td width="80"></td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td>
+                <a class="btn-add" href="javascript:BOX_remove('tcdiv')">确 定</a>
+            </td>
+            <td align="left"></td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="popdiv" class="pop">
+    <span class="pp-title">提示</span>
+    <a href="javascript:BOX_remove('popdiv')" class="close"></a>
+    <table align="center">
+        <tr>
+            <td width="80"></td>
+            <td class="poptext"><span class=""></span></td>
+            <td width="80"></td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td>
+                <a class="btn-add" href="javascript:BOX_remove('popdiv')">确 定</a>
+            </td>
+            <td align="left"></td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="managerdiv" class="pop" style="width: 700px">
+    <span class="pp-title">请选择项目经理</span>
+    <a href="javascript:BOX_remove('managerdiv');" class="close"></a>
+    <table align="center" style="margin: 10px">
+        <tr>
+            <td colspan="3">
+                <div class="manager-main">
+                   {foreach from=$managerList key=i item=row}
+                    <span class="m-pp" data-name="{$row.username}" data-id="{$row.user_id}">{$row.username}</span>
+                    {/foreach}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td align="center">
+                <a class="btn-on" href="javascript:void(0)" style="width: 300px">确 定</a>
+            </td>
+            <td align="left"></td>
+        </tr>
+    </table>
+</div>
+
+<div id="staffdiv" class="pop" style="width: 700px">
+    <span class="pp-title">请选择执行人员</span>
+    <a href="javascript:BOX_remove('staffdiv');" class="close"></a>
+    <table align="center" style="margin: 10px">
+        <tr>
+            <td colspan="3">
+                <div class="manager-main">
+					{foreach from=$userList key=i item=row}
+                    <span class="m-pp" data-name="{$row.username}" data-id="{$row.user_id}">{$row.username}</span>
+                    {/foreach}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td align="center">
+                <a class="btn-on" href="javascript:void(0)" style="width: 300px">确 定</a>
+            </td>
+            <td align="left"></td>
+        </tr>
+    </table>
+</div>
+
+
+
+<!--区间初始拷贝-->
+<div class="b-con dis demo">
+    <span class="q-title w-120 name"></span>
+	<span class="fp-list">
+		<input type="text" class="form-unit staff" name="people" style="width: 200px" placeholder="请选择人员>>">
+		<select class="form-unit  w-141 interval-select"  name="task">
+			<option value="">任务类型</option>
+		</select>
+		<input type="text" class="form-unit w-95" name="NO" readonly />
+		<span class="q-title dd create_user-no">生成工单号</span>
+	</span>
+	<span class="control">
+		<span class="clear">&nbsp;</span>
+	</span>
+</div>
+
+<div class="b-main rel file-demo dis">
+    <input type="file" name="aj-file"  id="aj-file" />
+    <span class="q-title w-120"></span>
+    <input type="text" class="form-unit w-265" placeholder="请选择上传文件" name="wj">
+    <a href="javascript:void(0)" data-type="projectFile" class="ajax-update"><span>确认上传</span></a>
+    <span class="control">
+        <span class="file-clear">&nbsp;</span>
+    </span>
+</div>
+
+<div class="b-main rel ht-demo dis">
+    <input type="file" name="ht-file" id="ht-file" />
+    <span class="q-title w-120"></span>
+    <input type="text" class="form-unit w-265" placeholder="请选择上传文件" name="ht">
+    <a href="javascript:void(0)" data-type="projectContractFile" class="ajax-update"><span>上传合同</span></a>
+    <span class="control">
+        <span class="file-clear">&nbsp;</span>
+    </span>
+</div>
+<!--区间初始结束-->
+
+<script src="/js/vendor/jquery-1.8.2.min.js"></script>
+<script src="/js/plugins.min.js"></script>
+<script src="/js/matrix.min.js"></script>
+<script src="/js/all.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/interval.js"></script>
+<script src="/js/ajaxfileupload/ajaxfileupload.js"></script>
+<script>
+    var staffNow = "";
+    $(function() {
+        var typeList = eval({$typeList});
+        var _txt = "";
+        for(var i in typeList){
+            _txt += "<option value="+i+">"+typeList[i]+"</option>"
+        }
+        $(".b-con select").append(_txt);
+        $(".manager").click(function(){
+            $("#managerdiv .on").removeClass("on")
+            BOX_show("managerdiv");
+        });
+        $(".staff").live("click",function(){
+            $("#staffdiv .on").removeClass("on");
+            staffNow = $(this);
+            BOX_show("staffdiv");
+        });
+
+        $("#managerdiv span, #staffdiv span").click(function(){
+            $(this).siblings("span").removeClass("on");
+            $(this).addClass("on");
+        });
+        //项目经理input
+        $("#managerdiv .btn-on").click(function(){
+            var _myself = "";
+            _myself = $(this).parents("table").find(".manager-main .on:eq(0)");
+            $("#project_manager_id").val(_myself.data("id"));
+            $(".manager").val(_myself.data("name"));
+            BOX_remove('managerdiv')
+        })
+
+        $("#staffdiv .btn-on").click(function(){
+            var _myself = "";
+            _myself = $(this).parents("table").find(".manager-main .on:eq(0)");
+
+            staffNow.data("allId",_myself.data("id"));
+            staffNow.val(_myself.data("name"));
+            BOX_remove('staffdiv')
+        })
+
+        //ajax上传按钮
+        $(".ajax-update").live("click",function(){
+            var _d = $(this).parents("div").find("input[type='file']");
+            if($(this).data("type")=="projectFile"){
+                ajaxFileUpload(_d.attr("id"),"?task=upload&name=projectFile");
+            }else if($(this).data("type")=="projectContractFile"){
+                ajaxFileUpload(_d.attr("id"),"?task=upload&name=projectContractFile");
+            }
+        })
+
+        $(".qx-btn").click(function(){
+            var project_name	   = $('#project_name').val().replace(/^\s+|\s+$/g,"");
+            var customer_name 	   = $('#customer_name').val().replace(/^\s+|\s+$/g,"");
+            var project_manager_id = $('#project_manager_id').val().replace(/^\s+|\s+$/g,"");
+            var project_status 	   = $('#status').val();
+            var comment 		   = $('#comment').val().replace(/^\s+|\s+$/g,"");
+            var project_desc 	   = $('#project_desc').val().replace(/^\s+|\s+$/g,"");
+            var contract_no 	   = $('#contract_no').val().replace(/^\s+|\s+$/g,"");
+            var contract_amount    = $('#contract_amount').val().replace(/^\s+|\s+$/g,"");
+            var real_amount 	   = $('#real_amount').val().replace(/^\s+|\s+$/g,"");
+            var other_amount 	   = $('#other_amount').val().replace(/^\s+|\s+$/g,"");
+
+			if (project_name == '') {
+                showInfo("error","请填写项目名称！");
+				$('#project_name').focus();
+				return;
+			}
+
+			if (customer_name == '') {
+                showInfo("error","请填写客户名称！");
+				$('#customer_name').focus();
+				return;
+			}
+
+			if (project_manager_id == '' || project_manager_id == '0') {
+                showInfo("error","请选择项目经理！");
+				$('#project_manager').focus();
+				return;
+			}
+
+			if (project_status == '') {
+                showInfo("error","请选择项目状态！");
+				$('#status').focus();
+				return;
+			}
+
+			if (comment != '' && comment.length > 30) {
+                showInfo("error","备注说明最多30个字符！");
+				$('#project_no').focus();
+				return;
+			}
+			if (project_desc != '' && project_desc.length > 500) {
+                showInfo("error","项目描述最多500个字符！");
+				$('#project_desc').focus();
+				return;
+			}
+            /*if (contract_no == '') {
+				alert('请填写合同号');
+				$('#contract_no').focus();
+				return;
+			}
+			if (contract_amount == '') {
+				alert('请填写合同金额');
+				$('#contract_amount').focus();
+				return;
+			}
+			if (real_amount == '') {
+				alert('请填写实际收款');
+				$('#real_amount').focus();
+				return;
+			}
+			if (other_amount == '') {
+				alert('请填写第三方费用');
+				$('#other_amount').focus();
+				return;
+			}*/
+            var personnel_list = [];
+            $(".write .error").removeClass("error");
+            $(".write .b-con").each(function(e){
+                if($(this).find("input[name^='people']").val()!=="" || $(this).find("select").val()!=="" || $(this).find("input[name^='NO']").val()!==""){
+                    if($(this).find("input[name^='people']").val()==""){
+                        showInfo("error","请选择人员！");
+                        $(this).find("input[name^='people']").addClass("error");
+                        return;
+                    };
+                    if($(this).find("select").val()==""){
+                        showInfo("error","请选择任务类型！");
+                        $(this).find("select").addClass("error");
+                        return;
+                    };
+                    if($(this).find("input[name^='NO']").val()==""){
+                        showInfo("error","请填写工单号！");
+                        $(this).find("input[name^='NO']").addClass("error");
+                        return;
+                    };
+                }
+
+                var _yy = {};
+                _yy.user_id = $(this).find("input[name^='people']").data("allId");
+                _yy.user_type = $(this).find("select").val();
+                _yy.user_no = $(this).find("input[name^='NO']").val();
+                _yy.user_no_id = $(this).find("input[name^='NO']").data("myId");
+                personnel_list.push(_yy);
+            })
+
+            if($(".write .error").length<=0){
+                $.post('?task=update', {
+                    project_no:'{$detail.project_no}',
+                    project_name:project_name,
+                    customer_name:customer_name,
+                    manager_id:project_manager_id,
+                    status:project_status,
+                    comment:comment,
+                    project_desc:project_desc,
+                    contract_no:contract_no,
+                    contract_amount:contract_amount,
+                    real_amount:real_amount,
+                    other_amount:other_amount,
+                    personnel_list:personnel_list,
+                    formhash:'{$formhash}',
+                    project_id:'{$detail.project_id}'
+                }, function(data){
+                    if (data.status == 'SUCCESS') {
+                        $('form')[0].reset();
+                        showInfo("success","您修改的项目已成功！");
+                    }else{
+                        showInfo("error",data.msg);
+                    }
+                }, 'json');
+            }
+        });
+
+		$('.create_project-no').live("click",function(){
+			$.post('?task=get_projectno', {
+					location:$('#location').val(),
+					formhash:'{$formhash}'
+				}, function(data){
+				if (data.status == 'SUCCESS') {
+                    $(".create_project-no").css("color","#989898");
+                    $(".create_project-no").removeClass("create_project-no");
+					$('#project_no').val(data.project_no);
+				}
+			}, 'json');
+		});
+
+
+		$('.create_user-no').live('click', function(){
+            var _this = $(this);
+			$.post('?task=get_userno', {
+					formhash:'{$formhash}'
+				}, function(data){
+				if (data.status == 'SUCCESS') {
+                    _this.css("color","#989898");
+                    _this.removeClass("create_user-no");
+                        _this.siblings("input[name^='NO']").val(data.user_no);
+                        _this.siblings("input[name^='NO']").data("myId",data.user_no_id)
+                    //$('#project_no').val(data.user_no);
+				}else if(data.user_no==0){
+                    showInfo("error",data.msg);
+                }
+			}, 'json');
+		});
+
+    });
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+@charset "utf-8";
+/**通用CSS**/
+
+.pop{background:#fff;z-index:90000; border:1px solid #626161;
+    width: 460px;line-height:20px; text-align: left;
+    z-index: 999; display: none;
+    left:50%;top:50%;
+    position:fixed;
+    _position:absolute;}
+.pop .p-title { padding:10px 30px; font-size: 14px; color: #ffffff; height:20px; line-height: 20px; background-color: #2e74bc}
+.pop .pp-title{
+    display: block;
+    padding: 10px;
+    position: relative;
+    background-color: #f3f3f3;
+}
+.pop .main { padding:40px 10px;}
+.pop .po{padding: 30px}
+.pop .main p{ margin-bottom:10px; font-size:12px; padding-left:35px;color:#666666;}
+.pop .main .txt {  padding: 5px 0 12px 35px; line-height:14px;_line-height:18px;}
+.pop .main .title { font-weight:bold;  padding: 5px 0 12px 35px; }
+.pop .main .success{ background:url(../img/icon_success.png) no-repeat; }
+.pop .main .error{ background:url(../img/icon_error.png) no-repeat; }
+.pop .main .warning{ background:url(../img/icon_warning.png) no-repeat; }
+.pop .main.progress{ padding:20px 70px 100px;}
+.pop .progress .outer{ border:1px solid #e6e6e6;}
+.pop .progress .inner{ width:465px; height:33px; border:1px solid #fff; background:url(../images/progress_bg.png) repeat-x;}
+.pop .progress .p_outer{ border:1px solid #1159a4;width:40%;}
+.pop .progress .p_inner{ border:1px solid #5897d6; background:url(../images/progress.png) repeat-x; height:31px;}
+.pop .btns{ padding:20px 0; text-align:center; border-top:1px dashed #ccc; margin:0 5px;}
+.mask{width:100%;height:2000px;; background:#000;filter:alpha(opacity=50);opacity: 0.5;position:absolute;left:0;top:0; z-index:999;}
+.pop .close{ width:40px; height:40px; background:url(../img/close.png) 15px 10px no-repeat; position:absolute; right:5px; top:-0px; display:block;}
+.pop .pd{padding: 50px 90px}
+/*** 遮罩层 ***/
+#BOX_overlay {z-index: 99995; position: fixed; top:0; left:0; width:100%;
+    _position:absolute;
+    /*_top:expression(eval(document.documentElement.scrollTop)); */
+    _left:expression(eval(document.documentElement.scrollLeft));
+    zoom:1;background-color: #000;filter: alpha(opacity = 50);-moz-opacity: 0.5;opacity: 0.5;
+}
+
+/*#tcdiv {width: 590px; height: 300px; line-height:20px; text-align: left;
+ z-index: 999;font-size: 12px; left:46%;top:50%;
+ margin-left:-245px!important;
+margin-top:-150px!important;
+margin-top:0px;
+position:fixed!important;
+position:absolute;
+_top:       expression(eval(document.compatMode &&
+            document.compatMode=='CSS1Compat') ?
+            documentElement.scrollTop + (document.documentElement.clientHeight-this.offsetHeight)/2 :
+            document.body.scrollTop + (document.body.clientHeight - this.clientHeight)/2);}*/
+
+.fund-input{width:120px; height:34px; padding-left:15px; line-height:34px; border:1px solid #D6D6D6;  color:#666; font-size:14px; vertical-align:middle;}
+/*** 遮罩层结束 ***/
+
+.clearfix:after {content: "";display: block;height: 0;clear: both;}
+.clearfix {zoom: 1;}
+.margin_t_10 {   margin-top: 10px;}
+
+
+.label b{font-size:18px;font-weight:normal;}
+.cz_label{ width:150px; text-align:right; padding-right:10px;}
+.d_label{ width:130px; text-align:right; padding-right:10px; color: #666666; display:inline-block; height:36px; line-height:36px; margin-right:10px; float:left}
+
+.txtbox{border:1px solid #d6d6d6; width:208px; height:34px; margin-right:10px; padding:0 10px; float:left; line-height:34px;}
+.txtbox_cz{border:1px solid #d6d6d6; width:108px; height:34px; margin-right:10px; padding:0 10px; float:left; line-height:34px; color:#666666; font-size:16px;}
+.txtbox_login{border:1px solid #d6d6d6; width:160px; height:34px; margin-right:10px; padding:0 10px; float:left; line-height:34px; color:#666666; font-size:16px;}
+.txtbox_date{border:1px solid #d6d6d6; width:68px; height:34px; margin-right:10px; padding:0 10px; float:left; line-height:34px; color:#666666; font-size:16px;}
+.txtbox_kj{border:1px solid #d6d6d6; width:210px; height:34px; margin-right:10px; padding:0 10px; float:left; line-height:34px; color:#666666; font-size:16px;}
+.txtbox_cz_color{color:#4070cf;}
+.txtarea{border:1px solid #d6d6d6; width:747px; height:100px; margin-right:10px; padding:10px 10px; float:left; line-height:20px;}
+.disabled{ border:none; background:none; overflow:hidden; color:#666;}
+.p_l_10{padding-left: 10px;}
+.dis{
+    display: none;
+}
+
+.rel{position: relative !important;}
+.t_info{position: absolute; width: 220px; left: 0; top: 10px; border: 1px solid #7EA3C9; padding: 5px 15px; line-height: 26px; color: #666666; margin-left: 10px; white-space:pre-line; text-align:left;}
+.t_info .sj{position: absolute; width: 6px; height: 9px; left: -6px; top: 12px; background-image: url("../img/login-err.png"); background-repeat: no-repeat;}
+
+.t_err{position: absolute; width: 220px; left: 0; top: 0; border: 1px solid #ce7171; background-color: #fff4f4; padding: 5px 15px; line-height: 26px; color: #ca4240; margin-left: 10px; white-space:pre-line; text-align:left;}
+.t_err .sj{position: absolute; width: 6px; height: 9px; left: -6px; top: 12px; background-image: url("../img/tips-error-arrow.png"); background-repeat: no-repeat;}
+
+
+.btn1{ color:#fff!important; font-weight:bold; width:110px!important; height:27px; line-height:14px; padding-top:10px;text-align:center; display:inline-block; text-decoration:none!important; margin-right:10px; font-size:14px;}
+.btn1.confirm{ background:url(../img/confim_btn.png);}
+
+.form-unit1:focus {
+    border: 1px solid #7ea3c9;
+}

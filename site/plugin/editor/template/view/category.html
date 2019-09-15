@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+</title>
+<link href="css/layout.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+
+<center>
+	<div class="main">
+		<div class="inter">
+			<div class="inter1">
+				<div class="title1 center"><B>类别管理</B></div>
+				<table id="mytable" cellspacing="0" width="100%">
+				  <tr>
+					<th>文件夹名称</th>
+					<th>管理</th> 
+				  </tr>
+				  {foreach from=$itemList key=i item=catrow} 
+				  <tr {if $i%2==0}class="ground2"{/if}> 
+					<td><a href="image_list.php?cid={$catrow.editor_image_category_id}"><span id="item{$i}" style="color:#000">{$catrow.name}</span></a></td> 
+					<td>
+						<A HREF="javascript:setmodify({$i},{$catrow.editor_image_category_id})"><IMG SRC="images/icon_edit.gif" WIDTH="19" HEIGHT="18" BORDER="0" ALT="编辑" align="absmiddle"></A> <A HREF="{literal}javascript:if(confirm('确实要删除吗？')){window.location='category.php?task=delete&cid={/literal}{$catrow.editor_image_category_id}';}"><IMG SRC="images/icon_delete.gif" WIDTH="19" HEIGHT="18" BORDER="0" ALT="删除" align="absmiddle"></A></div>
+					</td> 
+				  </tr> 
+				  {/foreach}
+				</table>
+			</div>		
+		</div>
+	</div>
+</center>
+<center>
+	<div class="title2">
+	
+	{if $pageList!=null}
+		{if $pageList->firstPageInRange>1}<a href="{$baseurl}{$pageList->first}" class="but">第一页</a> {/if}
+		{if $pageList->firstPageInRange>1}<a href="{$baseurl}{$pageList->previous}" class="but">上一页</a> {/if}
+		{foreach from=$pageList->pagesInRange key=i item=page}
+			{if $pageList->current==$page}<span>{$page}</span>{else}<a href="{$baseurl}{$page}">{$page}</a> {/if}
+		{/foreach}
+		{if $pageList->current < $pageList->last}<a href="{$baseurl}{$pageList->next}" class="but">下一页</a> {/if}
+		{if $pageList->current < $pageList->last}<a href="{$baseurl}{$pageList->last}" class="but">最后页</a>{/if}
+	{/if}
+	
+	</div>
+</center>
+
+<center>
+	<div class="main">
+		<div class="inter">
+			<div class="inter1">
+				<form action="category.php" name="form1" method="post" enctype="multipart/form-data">
+					<div class="title11 center">
+					<B id="editFolderTitle">添加文件夹</B>
+					</div>
+					<div class="title11 center" style="text-align:left;height:73px;">
+						文件夹名称：<INPUT TYPE="text" NAME="category" VALUE="{$category}" size="30"> &nbsp;
+						<INPUT id="post" TYPE="submit" value=" 添加 " />
+					</div>
+					<INPUT TYPE="hidden" NAME="task" VALUE="insert" />
+					<INPUT TYPE="hidden" NAME="forward" VALUE="{$forward}" />
+					<INPUT TYPE="hidden" NAME="cid" VALUE="" />
+				</form>
+			</div>
+		</div>
+	</div>
+</center>
+</body>
+<script>
+	
+	//{literal}
+	function setmodify(id,cid){
+
+		document.form1.task.value = "update";
+		document.form1.category.value = document.getElementById("item"+id).innerHTML;
+		document.form1.cid.value = cid;
+		document.getElementById("post").value = " 修改 ";
+		document.getElementById("editFolderTitle").innerHTML = "修改文件夹";
+	}
+	
+	function refreshpage(){
+		window.location.reload();
+	}
+	//{/literal}
+</script>
+</html>

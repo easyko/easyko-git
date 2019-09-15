@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0"/>
+    <title>易酷后台管理</title>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <link rel="icon" href="favicon.ico">
+    <link href="../../static/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="../../static/vendor/bootstrap/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="../../static/css/matrix.css" rel="stylesheet">
+    <link href="../../static/css/main.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <script src="../../static/vendor/bootstrap/bootstrap.ie8.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div id="wrapper">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="javascript:;">
+                    <img src="../../static/images/logo.png" alt="" height="30"/>
+                </a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="javascript:;"><img src="../../static/images/icon-avatar.png" alt="admin"
+                                                    class="img-circle"/>&nbsp; admin</a></li>
+                    <li><a href="javascript:;">退出</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="sidebar system-bar">
+        <ul class="nav nav-sidebar ">
+            <li class="active">
+                <a href="javascript:;" class="icon01"><div class="icon"></div><span>统计分析</span></a>
+            </li>
+            <li>
+                <a href="javascript:;" class="icon02"><div class="icon"></div><span>项目</span></a>
+            </li>
+            <li>
+                <a href="javascript:;" class="icon03"><div class="icon"></div><span>绩效</span></a>
+            </li>
+            <li>
+                <a href="javascript:;" class="icon04"><div class="icon"></div><span>成员管理</span></a>
+            </li>
+            <li>
+                <a href="javascript:;" class="icon05"><div class="icon"></div><span>网盘</span></a>
+            </li>
+            <li>
+                <a href="javascript:;" class="icon06"><div class="icon"></div><span>设置</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar main-bar">
+        <ul class="nav nav-sidebar">
+            <li class="project" data-url='../statistics/project.html'>
+                <a href="javascript:;">项目统计</a>
+            </li>
+            <li class="task" data-url='../statistics/task.html'>
+                <a href="javascript:;">任务统计</a>
+            </li>
+
+            <li class="member" data-url='../statistics/member.html'>
+                <a href="javascript:;">成员进度</a>
+            </li>
+            <li class="financial" data-url='../statistics/financial.html'>
+                <a href="javascript:;">项目财报</a>
+            </li>
+        </ul>
+    </div>
+    <iframe id="page-content" src="main.html" frameborder="0" scrolling="auto"></iframe>
+    
+</div>
+
+
+<script src="../../static/vendor/jquery-1.12.3.min.js"></script>
+<script src="../../static/vendor/bootstrap/bootstrap.min.js"></script>
+<script src="../../static/vendor/bootstrap/bootstrap-datepicker.min.js"></script>
+<script src="../../static/javascript/matrix.js"></script>
+
+<script>
+    $(function(){
+        //iframe 的宽和高
+        var w=$(window).width()-$(".system-bar").width()-$(".main-bar").width();
+        var h=$(window).height()-$(".navbar").height();
+        $("#page-content").width(w+"px").height(h+"px");
+
+        //一级导航切换
+        $(".system-bar li").click(function(){
+            $(this).addClass("active").siblings().removeClass("active");
+            var index=$(this).index();
+            switch(index){
+                case 0: //统计分析
+                    $(".main-bar ul").empty();
+                    $(".main-bar ul").append("<li class='project' data-url='../statistics/project.html'><a href='javascript:;'>项目统计</a></li>" +
+                            "<li class='task' data-url='../statistics/task.html'><a href='javascript:;'>任务统计</a></li>" +
+                            "<li class='member' data-url='../statistics/member.html'><a href='javascript:;'>成员进度</a></li>" +
+                            "<li class='financial' data-url='../statistics/financial.html'><a href='javascript:;'>项目财报</a></li>");
+                    break;
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    $(".main-bar ul").empty();
+
+            }
+        });
+
+        //二级导航切换
+        $(document).on("click",".main-bar li",function(){
+            $(this).addClass("active").siblings().removeClass("active");
+            var nowUrl=$("#page-content").attr("src");
+            var url=$(this).attr("data-url");
+            if(nowUrl!=url){
+                $("#page-content").attr("src",url);
+            }
+        });
+
+    })
+</script>
+
+</body>
+</html>
