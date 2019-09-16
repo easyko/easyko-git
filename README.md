@@ -1,1 +1,0 @@
-# easyko-git
