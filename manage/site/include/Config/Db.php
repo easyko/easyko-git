@@ -9,10 +9,10 @@ class Config_Db
 	public static function toArray($charset = 'UTF8')
 	{
 		return array (
-			'host'     		 => 'localhost',
-			'username' 		 => 'easyku_web_user',
-			'password' 		 => 'easyku_db_asdWf321',
-			'dbname'   		 => 'easyku_web',
+			'host'     		 => '',
+			'username' 		 => '',
+			'password' 		 => '',
+			'dbname'   		 => '',
 			'driver_options' => array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . strtoupper($charset) . ';')
         );
 	}
