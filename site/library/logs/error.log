@@ -35,3 +35,29 @@
 2019-09-03 09:53:40 - PHP Notice:  Undefined property: LoginController::$languag in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 154
 2019-09-03 09:53:52 - PHP Notice:  Undefined property: LoginController::$languag in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 154
 2019-09-03 09:55:32 - PHP Notice:  Undefined property: LoginController::$languag in F:\www\easyku_v0.0.1\site\class\LoginController.php on line 154
+2019-10-16 11:57:22 - PHP Notice:  Undefined variable: data in F:\www\easyko_v0.0.1_dev\site\class\ProductController.php on line 54
+2019-10-16 11:57:22 - PHP Notice:  Undefined variable: title in F:\www\easyko_v0.0.1_dev\site\class\ProductController.php on line 55
+2019-10-16 11:57:23 - PHP Notice:  Undefined variable: data in F:\www\easyko_v0.0.1_dev\site\class\ProductController.php on line 54
+2019-10-16 11:57:23 - PHP Notice:  Undefined variable: title in F:\www\easyko_v0.0.1_dev\site\class\ProductController.php on line 55
+2019-10-16 11:57:24 - PHP Notice:  Undefined variable: data in F:\www\easyko_v0.0.1_dev\site\class\ProductController.php on line 54
+2019-10-16 11:57:24 - PHP Notice:  Undefined variable: title in F:\www\easyko_v0.0.1_dev\site\class\ProductController.php on line 55
+2019-10-16 11:58:42 - PHP Notice:  Undefined variable: data in F:\www\easyko_v0.0.1_dev\site\class\ProductController.php on line 54
+2019-10-16 11:58:42 - PHP Notice:  Undefined variable: title in F:\www\easyko_v0.0.1_dev\site\class\ProductController.php on line 55
+2019-10-16 17:52:12 - PHP Notice:  Undefined property: Model_Checkout::$session in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:12 - PHP Notice:  Trying to get property of non-object in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:26 - PHP Notice:  Undefined property: Model_Checkout::$session in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:26 - PHP Notice:  Trying to get property of non-object in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Undefined property: Model_Checkout::$session in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Trying to get property of non-object in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Undefined property: Model_Checkout::$session in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Trying to get property of non-object in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Undefined property: Model_Checkout::$session in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Trying to get property of non-object in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Undefined property: Model_Checkout::$session in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Trying to get property of non-object in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Undefined property: Model_Checkout::$session in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-16 17:52:27 - PHP Notice:  Trying to get property of non-object in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 28
+2019-10-17 08:11:33 - PHP Notice:  Undefined variable: phone in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 30
+2019-10-17 08:12:00 - PHP Notice:  Undefined variable: phone in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 30
+2019-10-17 08:12:01 - PHP Notice:  Undefined variable: phone in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 30
+2019-10-17 08:12:01 - PHP Notice:  Undefined variable: phone in F:\www\easyku_v0.0.1_dev\site\class\Model\Checkout.php on line 30

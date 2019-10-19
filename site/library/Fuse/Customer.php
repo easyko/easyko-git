@@ -82,6 +82,7 @@ class Fuse_Customer extends Fuse_Model {
         if ($customer_query) {
             $this->session->data['customer_id'] = $customer_query['user_id'];
             $this->session->data['username'] = $customer_query['username'];
+            $this->session->data['company_id'] = $customer_query['company_id'];
             $this->customer_id = $customer_query['user_id'];
             $this->db->query("UPDATE ek_user SET last_login_ip = '" . $_SERVER['REMOTE_ADDR'] . "' WHERE user_id = '" . (int)$this->customer_id . "'");
             return true;

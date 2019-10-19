@@ -7,7 +7,7 @@
  * $date    2019-05-18 23:49:31
  */
 
-class Model_Product extends Fuse_Model
+class Model_Checkout extends Fuse_Model
 {
 
 	private $tableProduct = array('name' => 'ek_product', 'key' => 'product_id');
@@ -18,6 +18,22 @@ class Model_Product extends Fuse_Model
 		parent::__construct($config);
 	}
 
+	public function getCompany($companyId) {
+		$list = array();
+
+		$sql = "SELECT `company_id` AS companyId, `company_no` AS companyNo, `company_name` AS companyName, 
+					`contact_name` AS contactName, `email`, `industry_id`, `valid`, `product_id` AS productId, 
+					`recommand_id` AS recommandId
+				FROM `ek_company` 
+				WHERE `company_id` = '".$companyId."'";
+
+		$stmt = $this->db->query($sql, array($phone));
+		if ($row = $stmt->fetch()) {
+			$list = $row;
+		}
+
+		return $list;
+	}
 	public function getList()
 	{
 		$list = array();

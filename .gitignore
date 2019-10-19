@@ -1,0 +1,10 @@
+# 以'#' 开始的行，被视为注释.
+
+# 忽略编辑器产生的文件.idea
+.idea
+
+# 忽略编译文件
+site/template/compile/
+
+# 忽略日志文件
+site/library/wxpay/logs/

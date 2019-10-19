@@ -7,9 +7,21 @@
  * @author	jerry.cao (caowlong163@163.com)
  * $date    2019-05-18 23:49:31
  */
-class ProductController extends Fuse_Controller
+class CheckoutController extends Fuse_Controller
 {
 	private $url = '/product';
+    protected $language = array(
+        'error_illegal' => '非法提交',
+        'error_tel_empty' => '手机号码为空',
+        'error_telephone' => '手机号码格式错误',
+        'error_password_empty' => '密码为空',
+        'error_password' => '密码使用了非法字符',
+        'error_login' => '手机号或密码错误',
+        'error_smscode_empty' => '短信验证码为空',
+        'error_smscode' => '短信验证码出错',
+        'config_name' => '易酷',
+        'title' => '购买'
+    );
 
 	/**
 	 * Constructor
@@ -20,52 +32,66 @@ class ProductController extends Fuse_Controller
 	{
 		parent::__construct($config);
 
-		$this->userId   = Fuse_Cookie::getInstance()->user_id;
-		$this->roleId   = Fuse_Cookie::getInstance()->role_id;
-		$this->username = Fuse_Cookie::getInstance()->username;
-
-/*
-		if (empty($this->userId) || empty($this->roleId)) {
+		if (!Fuse_Customer::getInstanceCustomer()->isLogged()) {
 			Fuse_Response::redirect('/');
 		}
-*/
 
 		$this->registerTask('index', 'index');
 
-/*
-		// 配置文件
-		include_once(dirname(__file__) . '/config.php');
+        $this->userId   = Fuse_Session::getInstance()->data['customer_id'];
+        //$this->roleId   = Fuse_Session::getInstance()->role_id;
+        $this->username = Fuse_Session::getInstance()->data['username'];
 
-*/
-		$this->model = $this->createModel('Model_Product', dirname( __FILE__ ));
+        $this->model = $this->createModel('Model_Checkout', dirname( __FILE__ ));
+
+        $this->session = Fuse_Session::getInstance();
 	}
 
 	/**
-	 * 产品列表
+	 * 下单页面
 	 */
 	public function index()
 	{
-
 		$data = array();
 
-		$data['itemList'] = $this->model->getList();
-		$data['serverList'] = $this->model->getServerList();
+		//$data['itemList'] = $this->model->getList();
+		//$data['serverList'] = $this->model->getServerList();
 
-		$title = '产品';
-		$html = 'product.html';
+        // 企业信息
+        //echo '<PRE>';print_r($this->session);exit;
+        $company = $this->model->getCompany($this->session->data['company_id']);
+        $data['companyName'] = $company['companyId'];
+        echo '<pre>';print_r($company);exit;
+        // 计算费用
 
+        // 页面信息展示
 		$view 			= $this->createView();
+        $view->formhash = Config_App::formhash('checkout');
 		$view->data 	= $data;
-		$view->title	= $title;
-		$view->username = $this->username;
-        $view->display($html);
+		$view->title	= $this->language['title'];
+		$view->display('../checkout/checkout.html');
 	}
 
-	
+    /**
+     * 版本修改
+     */
+    public function editVersion(){
 
+    }
 
+    /**
+     * 成员数量修改
+     */
+	public function editNum(){
 
-	
+    }
+
+    /**
+     * 购买年限修改
+     */
+    public function editYears() {
+
+    }
 
 	public function finished()
 	{
@@ -96,8 +122,8 @@ class ProductController extends Fuse_Controller
 		//if ($webUrl == $_SERVER['HTTP_HOST']) {
 		//	$checkDir = "D:\\projects\\" . $pNo . "\\" . $jNo;
 		//} else {
-			$rootDir = Config_App::rootdir();
-			$checkDir = $rootDir . '/' . $pNo . '/' . $jNo;
+		$rootDir = Config_App::rootdir();
+		$checkDir = $rootDir . '/' . $pNo . '/' . $jNo;
 		//}
 
 		$userList = $this->getDir($checkDir);

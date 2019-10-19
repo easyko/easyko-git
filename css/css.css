@@ -1,0 +1,408 @@
+*{
+    padding:0;
+    margin:0;
+    outline:none;
+    font-size: 14px;
+}
+li{
+    list-style: none;
+}
+body{
+    background: #eee;
+}
+.purTop{
+    width: 660px;
+    position: relative;
+    top: 65px;
+    left:50%;
+    margin-left:-330px;
+}
+.purTop>ul{
+    overflow: hidden;
+    height: 150px;
+}
+.purTop li{
+    width: 220px;
+    float: left;
+}
+.purTop li p:nth-of-type(1){
+    width:45px;
+    height: 45px;
+    background: #e1e1e1;
+    color: #fff;
+    border-radius:45px;
+    text-align: center;
+    line-height: 45px;
+    font-size: 20px;
+    margin-left:88px;
+}
+.purTop li p:nth-of-type(2){
+    text-align: center;
+    margin-top: 28px;
+    color: #666;
+}
+.line1{
+    width: 145px;
+    height: 1px;
+    background: #e1e1e1;
+    position: absolute;
+    top:22px;
+    left:148px;
+}
+.line2{
+    width: 145px;
+    height: 1px;
+    background: #e1e1e1;
+    position: absolute;
+    top:22px;
+    right:148px;
+}
+.purTop li.active p:nth-of-type(1){
+    background: -webkit-linear-gradient(left, #2F74FD , #8267F9);
+    background: -o-linear-gradient(right, #2F74FD, #8267F9);
+    background: -moz-linear-gradient(right, #2F74FD, #8267F9);
+    background: linear-gradient(to right, #2F74FD , #8267F9);
+}
+.purTop li.active p:nth-of-type(2){
+    color: #4D5AFF;
+}
+.content{
+    width: 884px;
+    height: 566px;
+    position: absolute;
+    top:212px;
+    left:50%;
+    margin-left:-442px;
+    border-radius:3px;
+    background: #fff;
+    box-shadow: 0 0 5px 5px rgba(0,0,0,0.1);
+}
+.step2{
+    display: none;
+}
+.contentTop{
+    margin-top:24px;
+    height: 28px;
+}
+.contentTop>img{
+    height: 28px;
+    float: left;
+    margin-left:35px;
+}
+.contentTop>p{
+    width: 746px;
+    float: left;
+    margin-left:9px;
+    line-height: 27px;
+    border-bottom:1px solid #e1e1e1;
+    color: #666;
+}
+.businessName{
+    text-indent:152px;
+    color: #666;
+    margin-top:40px;
+}
+.businessName span{
+    color: #333;
+    font-size: 20px;
+}
+.edition{
+    margin-left: 208px;
+    overflow: hidden;
+    margin-top:35px;
+}
+.edition>p{
+    float: left;
+    height: 30px;
+    line-height: 30px;
+    color: #666;
+}
+.edition>ul{
+    float: left;
+}
+.edition li{
+    width: 113px;
+    height: 30px;
+    border-radius:30px;
+    border:1px solid #e1e1e1;
+    text-align: center;
+    line-height: 30px;
+    float: left;
+    margin-right:28px;
+}
+.edition li.active{
+    background: url(../img/editon.png) no-repeat 17px 13px/12px 9px;
+}
+.memberNum{
+    height: 38px;
+    margin-left: 208px;
+    margin-top:36px;
+    color: #666;
+    line-height: 38px;
+}
+.memberNum p{
+    float: left;
+}
+.memberNum input{
+    width: 289px;
+    border:1px solid #e1e1e1;
+    float: left;
+    height: 36px;
+    text-indent:10px;
+    margin-right:10px;
+}
+.purLife{
+    height: 19px;
+    margin-left:208px;
+    margin-top:32px;
+    color: #666;
+}
+.purLife> p{
+    float: left;
+}
+.purLife>ul{
+    float: left;
+    color: #333;
+}
+.purLife li{
+    height: 19px;
+    float: left;
+    margin-right:40px;
+}
+.purLife li input{
+    width: 19px;
+    height: 19px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin-top:2px;
+    vertical-align: middle;
+    margin-right:9px;
+    display: none;
+}
+.purLife li label{
+    vertical-align: middle;
+    text-indent:28px;
+    background:url(../img/radio.png) no-repeat  0 0/19px 19px;
+    display: inline-block;
+    height: 19px;
+}
+.purLife li input:checked +  label{
+    background: url(../img/radioCheck.png) no-repeat  0 0/19px 19px;
+}
+.price{
+    width: 100%;
+    height: 71px;
+    background: #fff8f3;
+    border-top:1px solid #F5E8D3;
+    border-bottom:1px solid #F5E8D3;
+    margin-top: 30px;
+}
+.price >p:nth-of-type(1){
+    font-size: 16px;
+    text-indent:208px;
+    margin-top:15px;
+}
+.price >p:nth-of-type(1)>span:nth-of-type(1){
+    color: #ff0000;
+}
+.price>p:nth-of-type(2){
+    text-indent:208px;
+    color: #666;
+    margin-top:8px;
+}
+.totalPrice{
+    margin-top:40px;
+    height: 38px;
+}
+.totalPrice p{
+    float: left;
+    color: #ff0000;
+    font-size: 26px;
+    text-indent: 208px;
+}
+.totalPrice span{
+    font-size: 26px;
+}
+.totalPrice button{
+    width: 145px;
+    height: 38px;
+    border:none;
+    border-radius:38px;
+    float: left;
+    margin-left:50px;
+    color: #fff;
+    background:url(../img/submit.png) no-repeat 0 0/100% 100%;
+}
+
+.detailContent{
+    width: 746px;
+    border-bottom:1px solid #e1e1e1;
+    margin-left:80px;
+    color: #666;
+}
+.detailContent>p{
+    margin-bottom:26px;
+}
+.detailContent>p:nth-of-type(1){
+    margin-top:50px;
+}
+.detailContent>p>span:nth-of-type(1){
+    display: inline-block;
+    width: 175px;
+    text-align: right;
+}
+.actual{
+    margin-bottom:26px;
+}
+.actual>p{
+    width: 320px;
+    float: left;
+    line-height: 32px;
+}
+.actual>p>span:nth-of-type(1){
+    display: inline-block;
+    width: 175px;
+    text-align: right;
+}
+.actual>p>span:nth-of-type(2){
+    color: #ff0000;
+}
+.code input[type=checkbox]{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 19px;
+    height: 19px;
+    vertical-align: middle;
+    background:url(../img/radio.png) no-repeat  0 0/19px 19px;
+}
+.code input[type=checkbox]:checked{
+    background:url(../img/radioCheck.png) no-repeat  0 0/19px 19px;
+}
+.code span{
+    line-height: 32px;
+    vertical-align: middle;
+    margin-right:10px;
+}
+.code input[type=text]{
+    width: 160px;
+    height: 30px;
+    text-indent:10px;
+    border:1px solid #e1e1e1;
+}
+.choice{
+    margin-top:30px;
+    overflow: hidden;
+}
+.choice >p{
+    width: 258px;
+    text-align: right;
+    line-height: 41px;
+    color: #666;
+    margin-right:15px;
+    float: left;
+}
+.choice ul{
+    float: left;
+}
+.choice li{
+    width: 142px;
+    height: 41px;
+    float: left;
+    margin-right:20px;
+}
+.choice li:nth-of-type(1){
+    background: url("../img/zhi.png") no-repeat 0 0/100% 100%;
+}
+.choice li:nth-of-type(1).active{
+    background: url("../img/zhiActive.png") no-repeat 0 0/100% 100%;
+}
+.choice li:nth-of-type(2){
+    background: url("../img/wei.png") no-repeat 0 0/100% 100%;
+}
+.choice li:nth-of-type(2).active{
+    background: url("../img/weiActive.png") no-repeat 0 0/100% 100%;
+}
+.payment{
+    width: 145px;
+    height: 38px;
+    background: -webkit-linear-gradient(left, #2F74FD , #8267F9);
+    background: -o-linear-gradient(right, #2F74FD, #8267F9);
+    background: -moz-linear-gradient(right, #2F74FD, #8267F9);
+    background: linear-gradient(to right, #2F74FD , #8267F9);
+    color: #FFF;
+    margin-top:30px;
+    margin-left:273px;
+    border:none;
+    border-radius:38px;
+}
+.completed{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    background: rgba(0,0,0,0.2);
+    z-index: 2;
+    display: none;
+}
+.comContent{
+    position: relative;
+    width: 524px;
+    height: 192px;
+    left:50%;
+    margin-left:-262px;
+    top:50%;
+    margin-top:-96px;
+    z-index: 5;
+    background: #fff;
+    border-radius:5px;
+    overflow: hidden;
+}
+.comContent>p:nth-of-type(1){
+    color: #333;
+    font-size: 16px;
+    margin:17px 0 0 12px;
+}
+.comContent>p:nth-of-type(2){
+    color: #333;
+    text-align: center;
+    margin-top:36px;
+}
+.comContent ul{
+    margin-left:88px;
+    overflow: hidden;
+    margin-top:40px;
+}
+.comContent li{
+    width: 146px;
+    height: 36px;
+    float: left;
+    margin-right:36px;
+    text-align: center;
+    line-height: 36px;
+}
+.comContent li:nth-of-type(1){
+    background: -webkit-linear-gradient(left, #2F74FD , #8267F9);
+    background: -o-linear-gradient(right, #2F74FD, #8267F9);
+    background: -moz-linear-gradient(right, #2F74FD, #8267F9);
+    background: linear-gradient(to right, #2F74FD , #8267F9);
+    color: #fff;
+    border-radius:38px;
+}
+.comContent li:nth-of-type(2){
+    border:1px solid #e1e1e1;
+    border-radius:38px;
+}
+.comContent>button{
+    width: 18px;
+    height: 16px;
+    position: absolute;
+    background: url("../img/cancel.png") no-repeat 0 0/100% 100%;
+    top:11px;
+    right:16px;
+    border:none;
+}

@@ -211,7 +211,7 @@ class LoginController extends Fuse_Controller
 
 		if (Fuse_Customer::getInstanceCustomer()->isLogged()) {
             Fuse_Customer::getInstanceCustomer()->logout();
-            unset($this->sessioni->data);
+            unset($this->session->data);
         }
         die(json_encode(array('status'=> 'LOGOUT_SUCCESS')));
 	}
