@@ -33,9 +33,28 @@ class MemberController extends CommonController
 		
 		$this->registerTask('getUserInfo', 'getUserInfo');
 		$this->registerTask('editUserInfo', 'editUserInfo');
-		// $this->registerTask('deluser', 'delUser');
+		
+		$this->registerTask('getListByDepartmentId', 'getListByDepartmentId');
 
 		$this->model = $this->createModel('Model_Member', dirname( __FILE__ ));
+	}
+
+	/**
+	 * 根据部门id查询列表
+	 */
+	public function getListByDepartmentId()
+	{
+		$username = Fuse_Request::getFormatVar($this->params, 'username');
+		$username = Fuse_Tool::paramsCheck($username);
+
+		$departmentId = Fuse_Request::getFormatVar($this->params, 'departmentId', '1');
+		if ($departmentId == '') {
+			die(json_encode(array('code'=> '1111', 'message' => '参数丢失', 'data' => '')));
+		}
+
+		$itemList  = $this->model->getListByDepartmentId($this->companyId, $departmentId, $username);
+		
+		die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $itemList)));	
 	}
 
 	/**

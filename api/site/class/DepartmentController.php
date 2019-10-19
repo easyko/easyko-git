@@ -34,10 +34,7 @@ class DepartmentController extends CommonController
 	 */
 	public function departmentList()
 	{
-
-		// $size = intval(Fuse_Request::getVar('size'));
 		$size = Fuse_Request::getFormatVar($this->params, 'size', '1');
-
         $page = Fuse_Request::getFormatVar($this->params, 'page', '1');
         if (empty($page)) { $page = 1; }
 		$perpage = !empty($size) ? $size : 10;

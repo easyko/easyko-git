@@ -10,9 +10,9 @@
 class Model_Project extends Fuse_Model
 {
 
-	private $tableProject  = array('name' => 'ek_project_list', 'key' => 'project_id');
-	private $tableUser 	   = array('name' => 'ek_user', 'key' => 'user_id');
-	private $tableExecUser = array('name' => 'ek_project_exec_users', 'key' => 'execuser_id');
+	private $tableProject = array('name' => 'ek_project', 'key' => 'project_id');
+	private $tableUser 	  = array('name' => 'ek_user', 'key' => 'user_id');
+	private $tableTask    = array('name' => 'ek_project_task', 'key' => 'task_id');
 
 
 	public function __construct($config=array())
@@ -27,18 +27,13 @@ class Model_Project extends Fuse_Model
 	{
 		$list = array();
 		$sql = "SELECT '' as itemNo,tp.project_no as projectNo,tp.project_name as projectName,
-					tp.customer_name as customerName,tp.project_manager_id as managerName,
-					tp.exec_users_ids as execUsersIds, tp.start_date as startDate,
+					tp.customer_name as customerName,tu.username as managerName,
+					tp.task_users as execUsersIds, tp.start_date as startDate,
 					tp.finished_date as finishDate, '0' as taskNums, '0' as projectTime, 
 					'0' as workHours,tp.status
 				FROM `{$this->tableProject['name']}` as tp
-				LEFT JOIN `{$this->tableUser['name']}` as tu
-				ON tp.`project_manager_id` = tu.`user_id`
+				LEFT JOIN `{$this->tableUser['name']}` as tu ON tp.`project_manager_id` = tu.`user_id`
 				WHERE {$where} AND tp.`valid` = '1'";
-
-		//if ($this->roleId == '2') {
-			//$sql .= " AND tp.`project_manager_id` = '{$this->userId}'";
-		//}
 
 		$sql .= " ORDER BY tp.`{$this->tableProject['key']}` DESC";
 
@@ -50,13 +45,13 @@ class Model_Project extends Fuse_Model
 			while ($row = $stmt->fetch()) {
 				// 格式化
 				$row['startDate'] = $row['startDate'];
-				$row['status'] = $statList[$row['status']];
+				$row['status'] = !empty($row['status']) ? $statList[$row['status']]['statusName'] : '';
 				$row['execUsersIds'] = $this->getExceUsers($row['execUsersIds']);
 
                 $list[] = $row;
 			}
 		}
-print_r($list);die;
+
 		return $list;
 	}
 
@@ -110,7 +105,7 @@ print_r($list);die;
 		$date = date('Y-m-d', time() - 3600*24);
 
 		$execuserIds = array();
-		$sql = "SELECT `{$this->tableExecUser['key']}` FROM `{$this->tableExecUser['name']}`
+		$sql = "SELECT `{$this->tableTask['key']}` FROM `{$this->tableTask['name']}`
 				WHERE `valid` = '0' AND LEFT(`time`, 10) <= '{$date}'";
 
 		if ($stmt = $this->db->query($sql)) {
@@ -124,7 +119,7 @@ print_r($list);die;
 		}
 
 		$execuserIds = "'" . implode("','", $execuserIds) . "'";
-		$this->db->query("DELETE FROM `{$this->tableExecUser['name']}` WHERE `{$this->tableExecUser['key']}` IN ({$execuserIds})");
+		$this->db->query("DELETE FROM `{$this->tableTask['name']}` WHERE `{$this->tableTask['key']}` IN ({$execuserIds})");
 	}
 
 	public function getTotal($where = 1)
@@ -135,10 +130,6 @@ print_r($list);die;
 		$sql = "SELECT count(*) as total FROM `{$this->tableProject['name']}` as tp
 				LEFT JOIN `{$this->tableUser['name']}` as tu ON tp.`project_manager_id` = tu.`user_id`
 				WHERE {$where} AND tp.`valid` = '1'";
-
-		if ($this->roleId == '2') {
-			$sql .= " AND tp.`project_manager_id` = '{$this->userId}'";
-		}
 
 		if ($stmt = $this->db->query($sql)) {
 			if ($row = $stmt->fetch()) {
@@ -224,53 +215,75 @@ print_r($list);die;
 		return $returnId ? $projectNo : 0;
 	}
 
-	public function getUserNo($companyId)
+	/**
+	 * 获取任务单号
+	 */
+	public function getTaskNo($companyId)
 	{
-		$jobNo = date('ymd') . '001';
+		$taskNo = date('md') . $companyId . '001';
 		$currDay = date('Y-m-d');
-		$sql = "SELECT `job_no` FROM `{$this->tableExecUser['name']}`
-				WHERE LEFT(`time`, 10) = '{$currDay}' ORDER BY `{$this->tableExecUser['key']}` DESC LIMIT 1";
+		$sql = "SELECT `task_no` FROM `{$this->tableTask['name']}`
+				WHERE LEFT(`time`, 10) = '{$currDay}' 
+				ORDER BY `{$this->tableTask['key']}` DESC 
+				LIMIT 1";
 		if ($stmt = $this->db->query($sql)) {
 			if ($row = $stmt->fetch()) {
-				$jobNo = $row['job_no'];
-				$jobNo++;
+				$taskNo = $row['task_no'];
+				$taskNo++;
 			}
 		}
 
 		$model = new Fuse_Model();
 		$object = array(
 			'company_id' => $companyId,
-			'job_no' 	 => $jobNo,
+			'task_no' 	 => $taskNo,
 			'valid'  	 => '0',
 			'ip' 	 	 => Config_App::getIP(),
 			'time' 	 	 => Config_App::getTime()
 		);
-		$returnId = $model->store($this->tableExecUser['name'], $object);
+		$returnId = $model->store($this->tableTask['name'], $object);
 
 		$result = array(
-			'no' => $jobNo,
+			'no' => $taskNo,
 			'id' => $returnId
 		);
 
 		return $result;
 	}
 
-	public function getProjectDetail($projectNo, $typeList)
+	public function getProjectDetail($companyId, $projectNo, $typeList)
 	{
 		$list = array();
 
-		$sql = "SELECT * FROM `{$this->tableProject['name']}` WHERE `project_no` = '{$projectNo}' LIMIT 1";
+		$sql = "SELECT project.*, users.username AS managerName
+				FROM `{$this->tableProject['name']}` project
+				LEFT JOIN `{$this->tableUser['name']}` users ON project.project_manager_id = users.user_id
+				WHERE project.`project_no` = '{$projectNo}' 
+					AND project.`company_id` = '{$companyId}' 
+				LIMIT 1";
 		if ($stmt = $this->db->query($sql)) {
 			if ($row = $stmt->fetch()) {
-				$userInfo = $this->userInfo($row['project_manager_id']);
+				/*$userInfo = $this->userInfo($row['project_manager_id']);
 				if (!empty($userInfo['username'])) {
 					$row['manager_name'] = $userInfo['username'];
 				} else {
 					$row['manager_name'] = '';
+				}*/
+				
+				// 项目周期
+				$row['projectTime'] = str_replace('-', '.', $row['start_date']) . '-';
+				if ($row['finished_date'] == '') {
+					$row['projectTime'] .= '至今';
+				} else {
+					$row['projectTime'] .= str_replace('-', '.', $row['finished_date']);
 				}
+				
+				// 项目workTime工时
+				$row['workTime'] = $this->getProjectWorkTime($companyId, $row['project_id']);
 
 				$dir = $projectNo . '/project_info/';
-				$attachment = unserialize($row['attachment']);
+				$attachment = !empty($row['attachment']) ? explode(',', $row['attachment']) : array();
+				$row['attachment'] = array();
 				if (!empty($attachment)) {
 					$newList = array();
 					foreach ($attachment as $v) {
@@ -285,12 +298,11 @@ print_r($list);die;
 					}
 					unset($row['attachment']);
 					$row['attachment'] = $newList;
-				} else {
-					$row['attachment'] = array();
 				}
 
 				$dir = $projectNo . '/contract_info/';
-				$contractAttachment = unserialize($row['contract_attachment']);
+				$contractAttachment = !empty($row['contract_attachment']) ? explode(',', $row['contract_attachment']) : array();
+				$row['contractAttachment'] = array();
 				if (!empty($contractAttachment)) {
 					$newList = array();
 					foreach ($contractAttachment as $v) {
@@ -303,14 +315,13 @@ print_r($list);die;
 							);
 						}
 					}
-					unset($row['contract_attachment']);
-					$row['contract_attachment'] = $newList;
-				} else {
-					$row['contract_attachment'] = array();
+					unset($row['contractAttachment']);
+					$row['contractAttachment'] = $newList;
 				}
 
 				$dir = $projectNo . '/proposal_info/';
-				$proposalAttachment = unserialize($row['proposal_attachment']);
+				$proposalAttachment = !empty($row['proposal_attachment']) ? explode(',', $row['proposal_attachment']) : array();
+				$row['proposalAttachment'] = array();
 				if (!empty($proposalAttachment)) {
 					$newList = array();
 					foreach ($proposalAttachment as $v) {
@@ -323,14 +334,13 @@ print_r($list);die;
 							);
 						}
 					}
-					unset($row['proposal_attachment']);
-					$row['proposal_attachment'] = $newList;
-				} else {
-					$row['proposal_attachment'] = array();
+					unset($row['proposalAttachment']);
+					$row['proposalAttachment'] = $newList;
 				}
 
 				$dir = $projectNo . '/meetingnote_info/';
-				$meetingNoteAttachment = unserialize($row['meetingnote_attachment']);
+				$meetingNoteAttachment = !empty($row['meetingnote_attachment']) ? explode(',', $row['meetingnote_attachment']) : array();
+				$row['meetingnoteAttachment'] = array();
 				if (!empty($meetingNoteAttachment)) {
 					$newList = array();
 					foreach ($meetingNoteAttachment as $v) {
@@ -343,22 +353,28 @@ print_r($list);die;
 							);
 						}
 					}
-					unset($row['meetingnote_attachment']);
-					$row['meetingnote_attachment'] = $newList;
-				} else {
-					$row['meetingnote_attachment'] = array();
+					unset($row['meetingnoteAttachment']);
+					$row['meetingnoteAttachment'] = $newList;
 				}
 
-				$row['usersList'] = $this->getUsersList($row['project_id'], $row['project_no'], $typeList);
+				$row['taskUsersList'] = $this->getTaskUserList($row['project_id'], $row['project_no'], $typeList);
+				$row['taskUsers'] = array();
+				if (!empty($row['taskUsersList'])) {
+					$taskUsers = array();
+					foreach ($row['taskUsersList'] as $val) {
+						$taskUsers[] = $val['username'];
+					}
+					$row['taskUsers'] = implode('、', $taskUsers);
+				}
 
-				$row['contract_amount'] = $row['contract_amount']*1;
-				$row['real_amount']     = $row['real_amount']*1;
-				$row['other_amount']    = $row['other_amount']*1;
+				$row['contractAmount'] = $row['contract_amount']*1;
+				$row['realAmount']     = $row['real_amount']*1;
+				$row['otherAmount']    = $row['other_amount']*1;
 
 				if (strpos($row['project_desc'], "<br />") === false) {
-					$row['project_desc'] = str_replace("\n", "<br />", $row['project_desc']);
+					$row['projectDesc'] = str_replace("\n", "<br />", $row['project_desc']);
 				}
-				$row['project_desc'] = htmlentities($row['project_desc']);
+				$row['projectDesc'] = htmlentities($row['project_desc']);
 
 				$list = $row;
 			}
@@ -367,16 +383,18 @@ print_r($list);die;
 		return $list;
 	}
 
-	public function getUsersList($projectId, $projectNo, $typeList)
+	/**
+	 * 获取任务执行人员列表
+	 */
+	public function getTaskUserList($projectId, $projectNo, $typeList)
 	{
 		$list = array();
-		$sql = "SELECT tu.`username`,eu.`user_id`,eu.`type`,eu.`execuser_id`,
-				eu.`job_no`,eu.`attachment`,eu.`finished_time`,eu.`start_time`,
+		$sql = "SELECT tu.`username`,eu.`user_id`,eu.`type`,eu.`task_id`,
+				eu.`task_no`,eu.`attachment`,eu.`finished_time`,eu.`start_time`,
 				eu.`end_time`,eu.`work_unit`,eu.`plan_score`,eu.`real_score`
-				FROM `{$this->tableExecUser['name']}` as eu
+				FROM `{$this->tableTask['name']}` as eu
 				LEFT JOIN `{$this->tableUser['name']}` as tu ON eu.`user_id` = tu.`user_id`
-				WHERE eu.`project_id` = '{$projectId}'
-				AND tu.`role_id` = '3' AND eu.`valid` = '1'
+				WHERE eu.`project_id` = '{$projectId}' AND eu.`valid` = '1'
 				ORDER BY eu.`time` ASC";
 
 		if ($stmt = $this->db->query($sql)) {
@@ -402,7 +420,7 @@ print_r($list);die;
 					$row['end_time'] = substr($row['end_time'], 0, 10);
 				}
 
-				$dir = $projectNo . '/' . $row['job_no'] . '/';
+				$dir = $projectNo . '/' . $row['task_no'] . '/';
 				$attachment = unserialize($row['attachment']);
 				if (!empty($attachment)) {
 					$newList = array();
@@ -445,7 +463,7 @@ print_r($list);die;
 
 	public function delUser($productId, $userId, $jobNo)
 	{
-		$sql = "DELETE FROM `{$this->tableExecUser['name']}` WHERE `project_id` = '{$productId}' AND `user_id` = '{$userId}' AND `job_no` = '{$jobNo}' LIMIT 1";
+		$sql = "DELETE FROM `{$this->tableTask['name']}` WHERE `project_id` = '{$productId}' AND `user_id` = '{$userId}' AND `job_no` = '{$jobNo}' LIMIT 1";
 
 		return $this->db->query($sql);
 	}
@@ -454,7 +472,7 @@ print_r($list);die;
 	{
 		$info = array();
 
-		$sql = "SELECT * FROM `{$this->tableExecUser['name']}` WHERE `{$this->tableProject['key']}` = '{$productId}' AND `valid` = '1' ORDER BY `{$this->tableExecUser['key']}` ASC";
+		$sql = "SELECT * FROM `{$this->tableTask['name']}` WHERE `{$this->tableProject['key']}` = '{$productId}' AND `valid` = '1' ORDER BY `{$this->tableTask['key']}` ASC";
 
 		if ($stmt = $this->db->query($sql)) {
 			while ($row = $stmt->fetch()) {
@@ -470,7 +488,7 @@ print_r($list);die;
 		$info = array_unique($info);
 		$info = implode(',', $info);
 
-		$sqlUpdate = "UPDATE `{$this->tableProject['name']}` SET `exec_users_ids` = '{$info}' WHERE `{$this->tableProject['key']}` = '{$productId}'";
+		$sqlUpdate = "UPDATE `{$this->tableProject['name']}` SET `task_users` = '{$info}' WHERE `{$this->tableProject['key']}` = '{$productId}'";
 
 		return $this->db->query($sqlUpdate);
 	}
@@ -538,13 +556,14 @@ print_r($list);die;
 					project_name AS projectName,
 					customer_name AS customerName,
 					project_manager_id AS managerName,
-					exec_users_ids AS execUsersIds,
+					task_users AS execUsersIds,
 					start_date AS createDate,
 					finished_date AS finishedDate,
 					cancel_date AS cancelDate,
 					0 AS workDate,
 					0 AS workTime,
-					`status`
+					`status`,
+					company_id AS companyId
 				FROM `{$this->tableProject['name']}` 
 				WHERE {$where}
 				ORDER BY `{$this->tableProject['key']}` DESC";
@@ -570,11 +589,12 @@ print_r($list);die;
 				}
 				
 				// 项目workTime工时
-				$row['workTime'] = $this->getProjectWorkTime($row['projectId'], $row['createDate']);
+				$row['workTime'] = $this->getProjectWorkTime($row['companyId'], $row['projectId']);
 				
 				unset($row['finishedDate']);
 				unset($row['cancelDate']);
 				unset($row['projectId']);
+				unset($row['companyId']);
 				$list[] = $row;
 			}
 		}
@@ -585,16 +605,17 @@ print_r($list);die;
 	/**
 	 * 统计分析 - 项目统计 - 计算项目工时
 	 */
-	private function getProjectWorkTime($projectId, $startDate)
+	private function getProjectWorkTime($companyId, $projectId)
 	{
 		$days = 0;
 		
 		$sql = "SELECT finished_time AS finishedTime,
 					start_time AS startTime,
 					end_time AS endTime
-				FROM `{$this->tableExecUser['name']}` 
-				WHERE `project_id` = '{$projectId}'";
-				
+				FROM `{$this->tableTask['name']}` 
+				WHERE `company_id` = '{$companyId}' 
+					AND `project_id` = '{$projectId}'";
+
 		if ($stmt = $this->db->query($sql)) {
 			while ($row = $stmt->fetch()) {
 				// 如果完成，那完成日期与开始日期对比
@@ -706,7 +727,7 @@ print_r($list);die;
 		$sql = "SELECT `execuser_id` AS execuser_id, job_no AS jobNo,
 					`start_time` AS startTime, `end_time` AS endTime, 
 					`finished_time` AS finishedTime
-				FROM `{$this->tableExecUser['name']}` 
+				FROM `{$this->tableTask['name']}` 
 				WHERE `company_id` = '{$companyId}'";
 		
 		if ($projectId != '') {
@@ -756,7 +777,7 @@ print_r($list);die;
 		/*$sql = "SELECT tu.`user_id` AS userId, tu.username AS member,
 					(
 						SELECT COUNT(DISTINCT `project_id`) 
-						FROM `{$this->tableExecUser['name']}` teu
+						FROM `{$this->tableTask['name']}` teu
 						WHERE tu.`company_id` = tu.`company_id` 
 						AND teu.`user_id` = tu.`user_id`
 					) AS joinNum
@@ -823,14 +844,64 @@ print_r($list);die;
 		return $list;
 	}
 	
+	/**
+	 * 详情-任务列表
+	 */
+	public function getTaskList($companyId, $projectNo, $projectTypeList)
+	{
+		$list = array();
+
+		$sql = "SELECT '' AS taskFile, task.task_no AS taskNo, task.task_desc AS taskDesc, task.type, 
+					users.username AS userName, task.start_time AS startTime, task.end_time AS endTime, 
+					'' AS taskTime, task.finished_time AS finishedTime, '' AS workHours, 
+					task.plan_score AS planScore, task.real_score AS realScore, 
+				project.project_id AS projectId, project.project_no AS projectNo
+				FROM `{$this->tableTask['name']}` task
+				LEFT JOIN `{$this->tableProject['name']}` project ON task.project_id = project.project_id
+				LEFT JOIN `{$this->tableUser['name']}` users ON task.user_id = users.user_id
+				WHERE task.`company_id` = '{$companyId}' 
+					AND project.`project_no` = '{$projectNo}' 
+					AND task.`valid` = 1 
+				ORDER BY task.`task_id` DESC";
+
+		if ($stmt = $this->db->query($sql)) {
+			while ($row = $stmt->fetch()) {
+				if ($row['finishedTime'] == '0000-00-00 00:00:00') {
+					$row['finishedTime'] = '';
+				}
+				
+				// 项目workTime工时
+				$value['workTime'] = $this->getProjectWorkTime($companyId, $row['projectId']);
+				
+				// 计划日期
+				$row['taskTime'] = Fuse_Tool::formatDateToStr($row['startTime'], $row['endTime']);
+				
+				// 类型
+				$row['type'] = isset($projectTypeList[$row['type']]) ? $projectTypeList[$row['type']] : $row['type'];
+				
+				unset($row['startTime']);
+				unset($row['endTime']);
+				unset($row['projectId']);
+				$list[] = $row;
+			}
+		}
+		
+		return $list;
+	}
+	
 	public function getTableProjectName()
 	{
 		return $this->tableProject['name'];
 	}
 	
-	public function getTableExecUserName()
+	public function getTableTaskName()
 	{
-		return $this->tableExecUser['name'];
+		return $this->tableTask['name'];
+	}
+	
+	public function getTableUserName()
+	{
+		return $this->tableUser['name'];
 	}
 }
 ?>

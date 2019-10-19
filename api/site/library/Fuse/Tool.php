@@ -440,7 +440,7 @@
 	/**
 	 * 获取最近七天所有日期
 	 */
-	function getLastWeek($time = '', $format='Y-m-d') {
+	public static function getLastWeek($time = '', $format='Y-m-d') {
 		$time = $time != '' ? $time : time();
 		// 组合数据
 		$date = [];
@@ -453,7 +453,7 @@
 	/**
 	 * 获取本周日期开始和结束日期
 	 */
-	function getCurrWeekBetween() {
+	public static function getCurrWeekBetween() {
 		$start = date("Y-m-d H:i:s", mktime(0, 0 , 0, date("m"),date("d")-date("w")+1, date("Y"))); 
 		$end = date("Y-m-d H:i:s", mktime(23, 59, 59, date("m"), date("d")-date("w")+7, date("Y"))); 
 		
@@ -466,7 +466,7 @@
 	/**
 	 * 获取本月日期开始和结束日期
 	 */
-	function getCurrMonthBetween() {
+	public static function getCurrMonthBetween() {
 		$start = date("Y-m-d H:i:s", mktime(0, 0 , 0,date("m"), 1, date("Y")));
 		$end = date("Y-m-d H:i:s", mktime(23, 59, 59, date("m"), date("t"), date("Y")));
 		
@@ -479,9 +479,56 @@
 	/**
 	 * 取随机指定位数长度字符串
 	 */
-	function getRandStr($len = 10) {
+	public static function getRandStr($len = 10) {
 		$strs = 'QWERTYUIOPASDFGHJKLZXCVBNM1234567890qwertyuiopasdfghjklzxcvbnm';
 		return substr(str_shuffle($strs), mt_rand(0, strlen($strs)-11), $len);
 	}
- }
+	
+	/**
+	 * 字符转utf-8
+	 */
+	public static function strToUtf8($str) {
+		$encode = mb_detect_encoding($str, array('ASCII', 'UTF-8', 'GB2312', 'GBK','BIG5'));
+		if ($encode == 'UTF-8') {
+			return $str;
+		}
+		
+		return mb_convert_encoding($str, 'UTF-8', $encode);
+	}
+	
+	/**
+	 * 防止sql注入
+	 */
+	public static function paramsCheck($value) {
+		if ($value == '') {
+			return $value;
+		}
+		
+		if (!get_magic_quotes_gpc()) {
+			// 进行过滤  
+			$value = addslashes($value);
+		} 
+
+		$value = str_replace("'", "\'", $value);
+		$value = str_replace("_", "\_", $value);
+		$value = str_replace("%", "\%", $value);
+		$value = nl2br($value); 
+		$value = htmlspecialchars($value); 
+		return $value; 
+	}
+	
+	/**
+	 * 格式化日期
+	 * 
+	 * 2015-03-07,2015-10-28
+	 * to "03.07-10.28"
+	 */
+	public static function formatDateToStr($startDate, $endDate)
+	{
+		$startDate = substr($startDate, 5, 5);
+		$endDate = substr($endDate, 5, 5);
+		
+		return str_replace('-', '.', $startDate) . '-' . str_replace('-', '.', $endDate);
+	}
+}
 ?>
