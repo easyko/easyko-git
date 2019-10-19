@@ -18,7 +18,7 @@ class MemberController extends CommonController
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-		parent::checkLoginValid();
+		// parent::checkLoginValid();
 
 		$this->registerTask('roleList', 'roleList');
 		$this->registerTask('roleManageList', 'roleManageList');
@@ -35,6 +35,7 @@ class MemberController extends CommonController
 		$this->registerTask('editUserInfo', 'editUserInfo');
 		
 		$this->registerTask('getListByDepartmentId', 'getListByDepartmentId');
+		$this->registerTask('getMemberListSample', 'getMemberListSample');
 
 		$this->model = $this->createModel('Model_Member', dirname( __FILE__ ));
 	}
@@ -654,6 +655,26 @@ class MemberController extends CommonController
 			die(json_encode(array('code'=> '1000', 'message' => '已超过成员数量限制，如需再新增人员，请联系客服续费', 'data' => '')));
 		}
 		/** 判断有效成员数量是否超过限制 结束 **/
+	}
+
+	/**
+	 * 查询公司下面的所有人，列出姓名和id
+	 */
+	public function getMemberListSample()
+	{
+		$data = array();
+		
+		$itemList = $this->model->getMemberListByCompanyId($this->companyId, 1);
+		if (!empty($itemList)) {
+			foreach ($itemList as $value) {
+				$data[] = array(
+					'userId' => $value['userId'],
+					'username' => $value['username']
+				);
+			}
+		}
+		
+		die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $data))); 
 	}
 
 	/**

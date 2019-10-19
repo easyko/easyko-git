@@ -12,7 +12,7 @@ class Model_User extends Fuse_Model
 
 	private $tableProject  = array('name' => 'ek_project_list', 'key' => 'project_id');
 	private $tableUser 	   = array('name' => 'ek_user', 'key' => 'user_id');
-	private $tableExecUser = array('name' => 'ek_project_exec_users', 'key' => 'execuser_id');
+	private $tableExecUser = array('name' => 'ek_project_task', 'key' => 'task_id');
 
 
 	public function __construct($config=array())
@@ -24,7 +24,7 @@ class Model_User extends Fuse_Model
 	{
 		$list = array();
 
-		$sql = "SELECT u.`project_id` as projectId, u.`user_id` AS userId, u.`job_no` as jobNo, 
+		$sql = "SELECT u.`project_id` as projectId, u.`user_id` AS userId, u.`task_no` as jobNo, 
 					u.`is_read` AS isRead, u.`type`, p.project_no AS projectNo, 
 					p.project_name AS projectName, p.customer_name AS customerName, 
 					p.project_desc AS projectDesc, p.start_date AS startDate
@@ -68,7 +68,7 @@ class Model_User extends Fuse_Model
 	{
 		$sql = "UPDATE `{$this->tableExecUser['name']}`
 				SET `is_read` = '1'
-				WHERE `job_no` = '{$jobNo}' AND `user_id` = '{$userId}'";
+				WHERE `task_no` = '{$jobNo}' AND `user_id` = '{$userId}'";
 
 		return $this->db->query($sql);
 	}

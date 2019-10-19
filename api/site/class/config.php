@@ -19,39 +19,52 @@ $locationList = array(
 );
 
 // 项目状态
-$projectStatList = array(
-	'1' => array(
-		'statusKey' => '1',
-		'statusName' => '执行中'
+$projectStatusList = array(
+	array(
+		'key' => '1',
+		'name' => '执行中'
 	),
-	'2' => array(
-		'statusKey' => '2',
-		'statusName' => '已完成'
+	array(
+		'key' => '2',
+		'name' => '已完成'
 	),
-	'3' => array(
-		'statusKey' => '3',
-		'statusName' => '已取消'
+	array(
+		'key' => '3',
+		'name' => '已取消'
 	),
-	'4' => array(
-		'statusKey' => '4',
-		'statusName' => '待回复'
+	array(
+		'key' => '4',
+		'name' => '待回复'
 	)
 );
 
 // 任务类型
-$typeList = array(
-	'1' => '策划',
-	'2' => '设计',
-	'3' => '调整',
-	'4' => '完稿'
+$projectTypeList = array(
+	array(
+		'key' => '1',
+		'name' => '策划'
+	),
+	array(
+		'key' => '2',
+		'name' => '设计'
+	),
+	array(
+		'key' => '3',
+		'name' => '调整'
+	),
+	array(
+		'key' => '4',
+		'name' => '完稿'
+	)
 );
 
 // 文件上传类别
 $fileUploadList = array(
-	'projectFile',			 // 项目资料
-	'projectContractFile',	 // 合同
-	'projectProposalFile',   // 项目提案资料
-	'projectMeetingNoteFile' // 会议纪要
+	'projectFile',			  // 项目资料
+	'projectContractFile',	  // 合同
+	'projectProposalFile',    // 项目提案资料
+	'projectMeetingNoteFile', // 会议纪要
+	'projectTaskFile' 		  // 项目任务单资料
 );
 
 $roleList = array(

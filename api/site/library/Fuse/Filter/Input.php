@@ -146,7 +146,7 @@ class Fuse_Filter_Input
 			}
 		} else {
 			$string = preg_replace('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4})|[a-zA-Z][a-z0-9]{2,5});)/', '&\\1',
-				str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), $string));
+				str_replace(array('&', '"', '<', '>', "'"), array('&amp;', '&quot;', '&lt;', '&gt;', "\'"), $string));
 		}
 		return $string;
 	}

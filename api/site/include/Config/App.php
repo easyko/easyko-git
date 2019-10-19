@@ -33,6 +33,13 @@ class Config_App
 	}
 
 	/**
+	 * Root directory of this site
+	 */
+	public static function webdir(){
+		return dirname(dirname(dirname(dirname(dirname(__FILE__)))));
+	}
+
+	/**
 	 * Root web root of this site
 	 */
 	public static function homeurl(){

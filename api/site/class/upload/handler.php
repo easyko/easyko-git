@@ -18,11 +18,15 @@ class UploadHandler {
     public $chunksExpireIn = 604800; // One week
 
     protected $uploadName;
+    
+    public function getInputName() {
+		return $this->inputName;
+	}
 
     /**
      * Get the original filename
      */
-    public function getName(){
+    public function getName() {
         if (isset($_REQUEST['qqfilename']))
             return $_REQUEST['qqfilename'];
 
@@ -124,22 +128,12 @@ class UploadHandler {
         // Get size and name
         $file = isset($_FILES[$this->inputName]) ? $_FILES[$this->inputName] : '';
         if (empty($file)) {
-			return array('error' => 'File invalid.');
+			return array('error' => '无上传文件');
 		}
-        
+
         $size = $file['size'];
         if (isset($_REQUEST['qqtotalfilesize'])) {
             $size = $_REQUEST['qqtotalfilesize'];
-        }
-
-        if ($name === null){
-            $name = $this->getName();
-        }
-        $name = iconv('UTF-8', 'GBK', $name);
-
-        // Validate name
-        if ($name === null || $name === ''){
-            return array('error' => '文件名称为空');
         }
 
         // Validate file size
@@ -151,9 +145,21 @@ class UploadHandler {
             return array('error' => '上传文件太大', 'preventRetry' => true);
         }
 
+        // Validate name
+        if (!isset($file['name']) || $file['name'] === ''){
+            return array('error' => '文件名称为空');
+        }
+        
         // Validate file extension
-        $pathinfo = pathinfo($name);
+        $pathinfo = pathinfo($file['name']);
         $ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
+
+		if ($name === null){
+            $name = $this->getName();
+        } else {
+			$name .= '.' . $ext;
+		}
+        $name = iconv('UTF-8', 'GBK', $name);
 
         if($this->allowedExtensions && !in_array(strtolower($ext), array_map('strtolower', $this->allowedExtensions))){
             $these = implode(', ', $this->allowedExtensions);
@@ -208,11 +214,11 @@ class UploadHandler {
                     mkdir(dirname($target));
                 }
                 if (move_uploaded_file($file['tmp_name'], $target)){
-                    return array('success'=> true, 'uuid' => $uuid);
+                    return array('success'=> true, 'uuid' => $uuid, 'name' => $name, 'size' => $file['size']);
                 }
             }
 
-            return array('error'=> '无法保存上载的文件,上载被取消,或遇到服务器错误');
+            return array('error'=> '无法保存上载的文件,上载被取消或遇到服务器错误');
         }
     }
 

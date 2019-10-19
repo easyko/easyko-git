@@ -530,5 +530,58 @@
 		
 		return str_replace('-', '.', $startDate) . '-' . str_replace('-', '.', $endDate);
 	}
+	
+	/**
+	 * 读取目录内容
+	 *
+	 */
+	public static function getDir($dir)
+	{
+		$files = array();
+		 if ($handle = opendir($dir)) {
+			 while (($file = readdir($handle)) !== false) {
+				 if ($file != ".." && $file != ".") {
+					 if (is_dir($dir . "/" . $file)) {
+						 $files[$file] = scandir($dir . "/" . $file);
+					 } else {
+						 $file = iconv('GBK', 'UTF-8', $file);
+						 $files[] = $file;
+					 }
+				 }
+			 }
+
+			 closedir($handle);
+			 return $files;
+		 }
+	}
+	
+	/** 删除所有空目录 
+	 * @param String $path 目录路径 
+	 */
+	public static function rmEmptyDir($path)
+	{ 
+		if (is_dir($path) && ($handle = opendir($path)) !== false) { 
+			while (($file = readdir($handle)) !== false) { // 遍历文件夹 
+				if ($file != '.' && $file != '..'){ 
+					$curfile = $path.'/'.$file; // 当前目录 
+					if (is_dir($curfile)) { // 目录 
+						self::rmEmptyDir($curfile); // 如果是目录则继续遍历 
+						if (count(scandir($curfile)) == 2) { // 目录为空,=2是因为.和..存在
+							rmdir($curfile); // 删除空目录 
+						}
+					}
+				}
+			}
+			closedir($handle); 
+		} 
+	}
+	
+	/**
+	 * 判断是否是windows机器
+	 */
+	public static function isWinOs()
+	{
+		return  strtoupper(substr(PHP_OS,0,3)) === 'WIN' ? true : false;
+	}
 }
 ?>
