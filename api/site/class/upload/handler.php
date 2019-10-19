@@ -9,6 +9,7 @@
 class UploadHandler {
 
     public $allowedExtensions = array();
+    public $notAllowedExtensions = array();
     public $sizeLimit = null;
     public $inputName = 'qqfile';
     public $chunksFolder = 'chunks';
@@ -102,11 +103,11 @@ class UploadHandler {
         if ($this->toBytes(ini_get('post_max_size')) < $this->sizeLimit ||
             $this->toBytes(ini_get('upload_max_filesize')) < $this->sizeLimit){
             $neededRequestSize = max(1, $this->sizeLimit / 1024 / 1024) . 'M';
-            return array('error'=>"Server error. Increase post_max_size and upload_max_filesize to ".$neededRequestSize);
+            return array('error' => '服务器错误,请将系统参数post_max_size和upload_max_filesize修改为' . $neededRequestSize);
         }
 
         if ($this->isInaccessible($uploadDirectory)){
-            return array('error' => "Server error. Uploads directory isn't writable");
+            return array('error' => '服务器错误,上传目录不可写');
         }
 
         $type = $_SERVER['CONTENT_TYPE'];
@@ -115,9 +116,9 @@ class UploadHandler {
         }
 
         if(!isset($type)) {
-            return array('error' => "No files were uploaded.");
+            return array('error' => '没有上传的文件');
         } else if (strpos(strtolower($type), 'multipart/') !== 0){
-            return array('error' => "Server error. Not a multipart request. Please set forceMultipart to default value (true).");
+            return array('error' => '服务器错误,非断点续传请求,请将forceMultipart设置为默认值(true)');
         }
 
         // Get size and name
@@ -134,43 +135,48 @@ class UploadHandler {
         if ($name === null){
             $name = $this->getName();
         }
-        $name = iconv("UTF-8", "GBK", $name);
+        $name = iconv('UTF-8', 'GBK', $name);
 
         // Validate name
         if ($name === null || $name === ''){
-            return array('error' => 'File name empty.');
+            return array('error' => '文件名称为空');
         }
 
         // Validate file size
         if ($size == 0){
-            return array('error' => 'File is empty.');
+            return array('error' => '上传文件为空');
         }
 
         if (!is_null($this->sizeLimit) && $size > $this->sizeLimit) {
-            return array('error' => 'File is too large.', 'preventRetry' => true);
+            return array('error' => '上传文件太大', 'preventRetry' => true);
         }
 
         // Validate file extension
         $pathinfo = pathinfo($name);
         $ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
 
-        if($this->allowedExtensions && !in_array(strtolower($ext), array_map("strtolower", $this->allowedExtensions))){
+        if($this->allowedExtensions && !in_array(strtolower($ext), array_map('strtolower', $this->allowedExtensions))){
             $these = implode(', ', $this->allowedExtensions);
-            return array('error' => 'File has an invalid extension, it should be one of '. $these . '.');
+            return array('error' => '上传文件扩展名无效,应是'. $these . '中的一个');
+        }
+		
+		if($this->notAllowedExtensions && in_array(strtolower($ext), array_map('strtolower', $this->notAllowedExtensions))){
+            $these = implode(', ', $this->notAllowedExtensions);
+            return array('error' => '上传文件扩展名非法');
         }
 
         // Save a chunk
         $totalParts = isset($_REQUEST['qqtotalparts']) ? (int)$_REQUEST['qqtotalparts'] : 1;
 
-        $uuid = $_REQUEST['qquuid'];
+        $uuid = isset($_REQUEST['qquuid']) ? $_REQUEST['qquuid'] : time();
         if ($totalParts > 1){
         # chunked upload
 
             $chunksFolder = $this->chunksFolder;
-            $partIndex = (int)$_REQUEST['qqpartindex'];
+            $partIndex = isset($_REQUEST['qqpartindex']) ? (int)$_REQUEST['qqpartindex'] : rand();
 
             if (!is_writable($chunksFolder) && !is_executable($uploadDirectory)){
-                return array('error' => "Server error. Chunks directory isn't writable or executable.");
+                return array('error' => '服务器错误,目录不可写或不可执行');
             }
 
             // $targetFolder = $this->chunksFolder.DIRECTORY_SEPARATOR.$uuid;
@@ -193,7 +199,7 @@ class UploadHandler {
             $target = join(DIRECTORY_SEPARATOR, array($uploadDirectory, $name));
             if ($target){
 				if (file_exists($target)) {
-					return array('success' => false, 'msg'=> '已存在同名文件，请修改文件名');
+					return array('success' => false, 'error'=> '已存在同名文件，请修改文件名');
 				}
 
                 $this->uploadName = $_FILES[$this->inputName]['name']; // basename($target);
@@ -202,12 +208,11 @@ class UploadHandler {
                     mkdir(dirname($target));
                 }
                 if (move_uploaded_file($file['tmp_name'], $target)){
-                    return array('success'=> true, "uuid" => $uuid);
+                    return array('success'=> true, 'uuid' => $uuid);
                 }
             }
 
-            return array('error'=> 'Could not save uploaded file.' .
-                'The upload was cancelled, or server error encountered');
+            return array('error'=> '无法保存上载的文件,上载被取消,或遇到服务器错误');
         }
     }
 

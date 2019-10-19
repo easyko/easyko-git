@@ -4,8 +4,7 @@
  * 
  * @category   Fuse
  * @package    Fuse
- * @copyright  Copyright (c) 2010-now 75.cn (http://cms.e75.cn)
- * @author Gary wang(qq:465474550,msn:wangbaogang123@hotmail.com)
+ * @author jerry (caowlong163@163.com, qq:1226454285)
  */
  
 header("Access-Control-Allow-Origin: *");

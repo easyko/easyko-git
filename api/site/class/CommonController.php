@@ -28,7 +28,7 @@ class CommonController extends Fuse_Controller
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-
+			$this->companyId=1;
 		$this->menuName = str_replace('.php', '', str_replace('/', '', $_SERVER['SCRIPT_NAME']));
 		// $this->url = str_replace('/', '', $_SERVER['SCRIPT_NAME']);
 
@@ -57,7 +57,7 @@ class CommonController extends Fuse_Controller
 				$companyInfo = $modelCompany->getCompanyById($data['info']['companyId']);
 				$this->productId = isset($companyInfo['product_id']) ? $companyInfo['product_id'] : '';
 			}
-			$this->companyId=1;
+
 			$this->checkLoginValid();
 			$this->checkUser();	
 		}
@@ -69,8 +69,8 @@ class CommonController extends Fuse_Controller
 	 */
 	private function checkParams($params)
 	{
-		// 此处暂时只检查果json参数
-		$type = $_SERVER['CONTENT_TYPE'];
+		// 此处暂时只检查json参数
+		$type = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : '';
         if (isset($_SERVER['HTTP_CONTENT_TYPE'])) {
             $type = $_SERVER['HTTP_CONTENT_TYPE'];
         }

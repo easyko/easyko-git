@@ -75,7 +75,7 @@ class IndexController extends CommonController
 		if (empty($menuInfo) || !isset($menuInfo['menus']) || empty($menuInfo['menus'])) {
 			die(json_encode(array('code'=> '1111', 'message' => '角色信息异常', 'data' => '')));
 		}
-		
+
 		// 获取菜单权限列表
 		$menuList = $modelMember->getCurrMenuListByRoleId($this->companyId, $this->roleId, $menuInfo['menus']);
 		die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $menuList)));

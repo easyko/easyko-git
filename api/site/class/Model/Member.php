@@ -246,7 +246,7 @@ class Model_Member extends Fuse_Model
 	/**
 	 * 获取用户信息
 	 */
-	public function getUserInfo($userId)
+	/*public function getUserInfo($userId)
 	{
 		$list = array();
 
@@ -263,7 +263,7 @@ class Model_Member extends Fuse_Model
 		}
 
 		return $list;
-	}
+	}*/
 	
 	/**
 	 * 根据当前用户的角色信息获取当前用户的菜单列表
@@ -325,6 +325,51 @@ class Model_Member extends Fuse_Model
 		if ($stmt = $this->db->query($sql)) {
 			if ($row = $stmt->fetch()) {
 				$info = $row['count'];
+			}
+		}
+
+		return $info;
+	}
+	
+	/**
+	 * 根据部门id查询列表
+	 */
+	public function getListByDepartmentId($companyId, $departmentId, $name = '')
+	{
+		$list = array();
+		
+		$sql = "SELECT tu.`user_id` AS userId, tu.username AS name
+				FROM `{$this->tableUser['name']}` tu
+				WHERE `company_id` = '{$companyId}' 
+				AND `department_id` = '{$departmentId}' AND `valid` = 1";
+				
+		if ($name != '') {
+			$sql .= " AND `username` LIKE '%{$username}%'";
+		}
+		
+		if ($stmt = $this->db->query($sql)) {
+			while ($row = $stmt->fetch()) {
+				$list[] = $row;
+			}
+		}
+
+		return $list;
+	}
+	
+	public function getUserInfoById($companyId, $userId)
+	{
+		$info = array();
+		
+		$sql = "SELECT user_no AS userNo, username AS name, 
+					login_name AS loginName, mobile, email
+				FROM `{$this->tableUser['name']}` user
+				WHERE `user_id` = '{$userId}' 
+					AND `company_id` = '{$companyId}' 
+					AND `valid` = 1";
+
+		if ($stmt = $this->db->query($sql)) {
+			if ($row = $stmt->fetch()) {
+				$info = $row;
 			}
 		}
 

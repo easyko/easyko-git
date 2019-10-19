@@ -1,6 +1,6 @@
 <?php
 // 官网地址
-$webUrl = 'pms.posher.cn';
+$webUrl = 'my.site.com';
 
 // 项目区域
 $locationList = array(
@@ -21,20 +21,20 @@ $locationList = array(
 // 项目状态
 $projectStatList = array(
 	'1' => array(
-		'statusName' => '执行中',
-		'colorClass' => 'project_status_executing'
+		'statusKey' => '1',
+		'statusName' => '执行中'
 	),
 	'2' => array(
-		'statusName' => '已完成',
-		'colorClass' => 'project_status_complete'
+		'statusKey' => '2',
+		'statusName' => '已完成'
 	),
 	'3' => array(
-		'statusName' => '已取消',
-		'colorClass' => 'project_status_calcel'
+		'statusKey' => '3',
+		'statusName' => '已取消'
 	),
 	'4' => array(
-		'statusName' => '待回复',
-		'colorClass' => 'project_status_reply'
+		'statusKey' => '4',
+		'statusName' => '待回复'
 	)
 );
 
