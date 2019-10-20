@@ -10,6 +10,7 @@
 class Model_Project extends Fuse_Model
 {
 
+
 	private $projectTypeList = array();
 	private $projectStatusList = array();
 
@@ -25,6 +26,7 @@ class Model_Project extends Fuse_Model
 	{
 		$this->projectStatusList = $statusList;
 	}
+
 
 	public function __construct($config=array())
 	{
@@ -219,16 +221,16 @@ class Model_Project extends Fuse_Model
 	}
 
 	/**
-	 * 根据项目id获取项目任务表单 
+	 * 根据项目编号获取项目任务表单 
 	 */
-	public function getProjectTaskInfo($companyId, $projectId, $taskNo = '')
+	public function getProjectTaskInfo($companyId, $projectNo, $taskNo = '')
 	{
 		$list = array();
-		$sql = "SELECT task.task_id AS taskId, task.task_no AS taskNo, 
-					task.task_desc AS taskDesc, task.attachment
+		$sql = "SELECT project.project_no AS projectNo, task.task_id AS taskId, 
+					task.task_no AS name, task.task_no AS taskNo, task.task_desc AS taskDesc
 				FROM `{$this->tableTask['name']}` task
 				LEFT JOIN `{$this->tableProject['name']}` project ON project.project_id = task.project_id
-				WHERE project.`project_id` = '{$projectId}' 
+				WHERE project.`project_no` = '{$projectNo}' 
 					AND project.`company_id` = '{$companyId}'";
 					
 		if ($taskNo != '') {
@@ -405,9 +407,9 @@ class Model_Project extends Fuse_Model
 	public function getTaskUserList($projectId, $projectNo)
 	{
 		$list = array();
-		$sql = "SELECT tu.`username`,eu.`user_id`,eu.`type`,eu.`task_id`,
-				eu.`task_no`,eu.`attachment`,eu.`finished_time`,eu.`start_time`,
-				eu.`end_time`,eu.`work_unit`,eu.`plan_score`,eu.`real_score`
+		$sql = "SELECT tu.`username`, eu.`user_id`, eu.`type`, eu.`task_id`,
+				eu.`task_no`, eu.`finished_time`, eu.`start_time`,
+				eu.`end_time`, eu.`work_unit`, eu.`plan_score`, eu.`real_score`
 				FROM `{$this->tableTask['name']}` as eu
 				LEFT JOIN `{$this->tableUser['name']}` as tu ON eu.`user_id` = tu.`user_id`
 				WHERE eu.`project_id` = '{$projectId}' AND eu.`valid` = '1'
@@ -434,26 +436,6 @@ class Model_Project extends Fuse_Model
 					$row['end_time'] = '--';
 				} else {
 					$row['end_time'] = substr($row['end_time'], 0, 10);
-				}
-
-				$dir = $projectNo . '/' . $row['task_no'] . '/';
-				$attachment = unserialize($row['attachment']);
-				if (!empty($attachment)) {
-					$newList = array();
-					foreach ($attachment as $v) {
-						if (is_array($v)) {
-							$newList[] = $v;
-						} else {
-							$newList[] = array(
-								'name' => $v,
-								'url' => $dir . $v
-							);
-						}
-					}
-					unset($row['attachment']);
-					$row['attachment'] = $newList;
-				} else {
-					$row['attachment'] = array();
 				}
 
 				$list[] = $row;

@@ -30,16 +30,17 @@ class UploadController extends CommonController
 		// 配置文件
 		include_once(dirname(__file__) . '/config.php');
 
-		// 文件配置类型
-		$this->fileUploadList = $fileUploadList;
+		
+		$this->fileUploadList = ;
 		
 		$this->modelProject = $this->createModel('Model_Project', dirname( __FILE__ ));
 		
 		// 任务类型
 		$this->modelProject->setProjectTypeList($projectTypeList);
-		
 		// 项目状态
 		$this->modelProject->setProjectStatusList($projectStatusList);
+		// 文件模块类型
+		$this->modelProject->setFileUploadTypeList($fileUploadList);
 		
 		$this->tempDirName = '/temp';
 		$this->rootDir = Config_App::webdir();
@@ -52,54 +53,22 @@ class UploadController extends CommonController
 		$this->uploader->notAllowedExtensions = array('exe', 'js', 'css', 'sql');
 	}
 
-	private function getFileTypeByName($name)
-	{
-		$type = 0;
-		// 类型 1项目 2合同 3提案资料 4会议纪要 5任务单
-		switch ($name) {
-			case 'projectFile':
-				$type = 1;
-				break;
-			case 'projectContractFile':
-				$type = 2;
-				break;
-			case 'projectProposalFile':
-				$type = 3;
-				break;
-			case 'projectMeetingNoteFile':
-				$type = 4;
-				break;
-			case 'projectTaskFile':
-				$type = 5;
-				break;
-		}
-		
-		return $type;
-	}
-	
-	private function checkFileTypeValid($name)
-	{
-		if ($name == '') {
-			return false;
-		}
-		
-		return in_array($name, $this->fileUploadList);
-	}
+
 
 	/**
 	 * 上传文件
 	 */
 	public function index()
 	{
-		$projectNo = 'M1910GV2zYTgR';//Fuse_Request::getFormatVar($this->params, 'projectNo');
-		$taskNo = '10191023';//Fuse_Request::getFormatVar($this->params, 'taskNo');
+		$projectNo = Fuse_Request::getFormatVar($this->params, 'projectNo');
+		$taskNo = Fuse_Request::getFormatVar($this->params, 'taskNo');
 		$fileType = Fuse_Request::getFormatVar($this->params, 'type');
 
 		if (empty($projectNo)) {
 			die(json_encode(array('code'=> '1111', 'message' => '参数项目编号缺失', 'data' => '')));
 		}
 
-		// 项目编号和任务单号都不为空，看成上传任务单号文件
+		// 项目编号和任务单号都不为空，即上传任务单下面的文件
 		if ($taskNo != '') {
 			$fileType = 'projectTaskFile';
 		}
@@ -107,13 +76,6 @@ class UploadController extends CommonController
 		if (!$this->checkFileTypeValid($fileType)) {
 			die(json_encode(array('code'=> '2222', 'message' => '非指定模块类型文件', 'data' => '')));
 		}
-
-		// 查询项目信息
-		/*$projectTaskList = $this->modelProject->getProjectTaskList($this->companyId, $projectNo, $taskNo);
-		print_r($projectTaskList);die;
-		if (empty($projectTaskList)) {
-			die(json_encode(array('code'=> '3333', 'message' => '项目信息查询失败', 'data' => '')));
-		}*/
 
 		// 文件保存目录
 		$fileDir = $this->tempDirName . '/upload/' . $projectNo . '/';

@@ -2,6 +2,7 @@
 // 官网地址
 $webUrl = 'my.site.com';
 
+/*
 // 项目区域
 $locationList = array(
 	'1' => array(
@@ -17,6 +18,7 @@ $locationList = array(
 		'en' => 'LD'
 	)
 );
+*/
 
 // 项目状态
 $projectStatusList = array(
@@ -58,21 +60,49 @@ $projectTypeList = array(
 	)
 );
 
-// 文件上传类别
-$fileUploadList = array(
-	'projectFile',			  // 项目资料
+// 项目文件模块类型
+$fileUploadTypeList = array(
+	/*'projectFile',			  // 项目资料
 	'projectContractFile',	  // 合同
 	'projectProposalFile',    // 项目提案资料
 	'projectMeetingNoteFile', // 会议纪要
-	'projectTaskFile' 		  // 项目任务单资料
+	'projectTaskFile' 		  // 项目任务单资料*/
+	
+	array(
+		'id' => 1,
+		'key' => 'projectFile',
+		'name' => '项目资料'
+	),
+	array(
+		'id' => 2,
+		'key' => 'projectContractFile',
+		'name' => '合同'
+	),
+	array(
+		'id' => 3,
+		'key' => 'projectProposalFile',
+		'name' => '项目提案资料'
+	),
+	array(
+		'id' => 4,
+		'key' => 'projectMeetingNoteFile',
+		'name' => '会议纪要'
+	),
+	array(
+		'id' => 5,
+		'key' => 'projectTaskFile',
+		'name' => '项目任务单资料'
+	)
 );
 
+/*
 $roleList = array(
 	'0' => '最高权限',
 	'1' => '总监',
 	'2' => '项目经理',
 	'3' => '执行人员'
 );
+*/
 
 /*$menuList = array(
 	'0' => array(

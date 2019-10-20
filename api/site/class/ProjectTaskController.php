@@ -25,6 +25,12 @@ class ProjectTaskController extends CommonController
 		$this->registerTask('upload', 'upload');
 
 		$this->model = $this->createModel('Model_Project', dirname( __FILE__ ));
+		$this->modelUpload = $this->createModel('Model_Upload', dirname( __FILE__ ));
+		
+		// 配置文件
+		include_once(dirname(__file__) . '/config.php');
+		// 项目文件模块类型
+		$this->modelUpload->setFileUploadTypeList($fileUploadTypeList);
 	}
 
 	/**
@@ -32,17 +38,36 @@ class ProjectTaskController extends CommonController
 	 */
 	public function taskList()
 	{
-		$projectId = Fuse_Request::getFormatVar($this->params, 'projectId', 1);
-		if (empty($projectId)) {
+		$projectNo = Fuse_Request::getFormatVar($this->params, 'projectNo');
+		if (empty($projectNo)) {
 			die(json_encode(array('code'=> '1111', 'message' => '参数为空', 'data' => '')));
 		}
 		
-		$data = $this->model->getProjectTaskInfo($this->companyId, $projectId);
+		// 查询当前项目下的除工单文件外的其它文件，如项目文件、合同文件
+		$list = $this->modelUpload->getProjectFileList($this->companyId, $projectNo);
+		if ($list) {
+			foreach ($list as &$val) {
+				$val['name'] = $this->modelUpload->getFileNameByType($val['type']);
+				$val['params'] = 'projectNo=' . $val['projectNo'] . '&type=' . $val['type'];
+				unset($val);
+			}
+		}
+	
+		// 查询当前项目下所有任务工单
+		$data = $this->model->getProjectTaskInfo($this->companyId, $projectNo);
 		if (empty($data)) {
 			die(json_encode(array('code'=> '2222', 'message' => '项目不存在', 'data' => '')));
 		}
-		
-		die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $data)));
+		if ($data) {
+			foreach ($data as &$val) {
+				$val['params'] = 'projectNo=' . $val['projectNo'] . '&taskNo=' . $val['taskNo'];
+				$list[] = $val;
+				unset($val);
+			}
+			unset($data);
+		}		
+				
+		die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $list)));
 	}
 	
 	/**
@@ -50,40 +75,40 @@ class ProjectTaskController extends CommonController
 	 */
 	public function taskAttachList()
 	{
-		$projectId = Fuse_Request::getFormatVar($this->params, 'projectId', 1);
+		$projectNo = Fuse_Request::getFormatVar($this->params, 'projectNo');
         $taskNo = Fuse_Request::getFormatVar($this->params, 'taskNo');
+        $type = Fuse_Request::getFormatVar($this->params, 'type');
 
-        if (empty($projectId) || $taskNo == '') {
+		if (!empty($type)) {
+			$this->taskProjectFileListByType($this->companyId, $projectNo, $type);
+		}
+
+        if ($projectNo == '' || $taskNo == '') {
 			die(json_encode(array('code'=> '1111', 'message' => '参数为空', 'data' => '')));
 		}
 
-		$detail = $this->model->getProjectTaskInfo($this->companyId, $projectId, $taskNo);
-		if (empty($detail)) {
+		$list = $this->modelUpload->getTaskFileList($this->companyId, $projectNo, $taskNo);
+		if (empty($list)) {
 			die(json_encode(array('code'=> '2222', 'message' => '项目不存在', 'data' => '')));
 		}
 
-		$attachment = (isset($detail[0]['attachment']) && !empty($detail[0]['attachment'])) ? $detail[0]['attachment'] : array();
-
-		/*$taskDataList = array();
-		$taskDir = Config_App::rootdir() . '/temp/' . $projectNo . '/';
-		if (count($detail['taskUsersList']) > 0) {
-			foreach ($detail['taskUsersList'] as $task) {
-				$taskDir .= $task['task_no'] . '/';
-				if (!is_dir($taskDir)) {
-					@mkdir($taskDir, 0777, true);
-					@chmod($taskDir, 0777);
-				}
-
-				if (Fuse_Tool::isWinOs()) {
-					$taskDir = iconv('UTF-8', 'GB2312', $taskDir);
-				}
-
-				$taskDataList[$task['task_no']] = Fuse_Tool::getDir($taskDir);
-			}
-		}*/
-
-        die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $attachment)));
+        die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $list)));
 	}
 
-	
+	/**
+	 * 查询除项目单文件以外的其它文件
+	 */ 
+	private function taskProjectFileListByType($companyId, $projectNo, $type)
+	{
+		if (empty($projectNo) || empty($companyId)) {
+			die(json_encode(array('code'=> '1111', 'message' => '参数为空', 'data' => '')));
+		}
+		
+		$list = $this->modelUpload->getTaskFileList($this->companyId, $projectNo, '', intval($type));
+		if (empty($list)) {
+			die(json_encode(array('code'=> '2222', 'message' => '项目不存在', 'data' => '')));
+		}
+
+        die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $list)));
+	}
 }

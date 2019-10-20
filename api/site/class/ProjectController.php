@@ -30,12 +30,6 @@ class ProjectController extends CommonController
 		$this->registerTask('taskNo', 'taskNo');
 		$this->registerTask('taskCreate', 'taskCreate');
 		$this->registerTask('projectTypeList', 'projectTypeList');
-		
-
-		// 配置文件
-		include_once(dirname(__file__) . '/config.php');
-
-		$this->fileUploadList = $fileUploadList;
 
 		$this->projectDescLen  = 1000;
 		$this->commentLen 	   = 120;
@@ -43,12 +37,16 @@ class ProjectController extends CommonController
 		$this->feedbackLen	   = 1000;
 		
 		$this->model = $this->createModel('Model_Project', dirname( __FILE__ ));
+		$this->modelUpload = $this->createModel('Model_Upload', dirname( __FILE__ ));
 		
+		// 配置文件
+		include_once(dirname(__file__) . '/config.php');
 		// 任务类型
 		$this->model->setProjectTypeList($projectTypeList);
-		
 		// 项目状态
 		$this->model->setProjectStatusList($projectStatusList);
+		// 项目文件模块类型
+		$this->modelProject->setFileUploadTypeList($fileUploadList);
 		
 		$this->tempDirName = '/temp';
 		$this->rootDir = Config_App::webdir();
@@ -210,12 +208,12 @@ class ProjectController extends CommonController
 			'company_id' 			 => $this->companyId
 		);
 
-		$model = new Fuse_Model();
+		// $model = new Fuse_Model();
 		if ($projectId && $projectNo) {
-			$model->update($this->model->getTableProjectName(), $object, " `company_id` = '{$this->companyId}' AND `project_no` = '{$projectNo}' ");
+			$this->model->update($this->model->getTableProjectName(), $object, " `company_id` = '{$this->companyId}' AND `project_no` = '{$projectNo}' ");
 			$returnId = $projectNo;
 		} else {
-			$returnId = $model->store($this->model->getTableProjectName(), $object);
+			$returnId = $this->model->store($this->model->getTableProjectName(), $object);
 			if (!$returnId) {
 				die(json_encode(array('code'=> '6666', 'message' => '创建失败', 'data' => '')));
 			}
@@ -232,8 +230,8 @@ class ProjectController extends CommonController
 	 */
 	private function moveFile($projectNo) 
 	{
-		$model = $this->createModel('Model_Upload', dirname( __FILE__ ));
-		$tempList = $model->getTempFileList($this->companyId, $projectNo);
+		$modelUpload = $this->createModel('Model_Upload', dirname( __FILE__ ));
+		$tempList = $modelUpload->getTempFileList($this->companyId, $projectNo);
 		if (!empty($tempList)) {
 			foreach ($tempList as $temp) {
 				$attach = $temp['file_url'];
@@ -251,7 +249,7 @@ class ProjectController extends CommonController
 					@mkdir(dirname($newPath), 0777, true);
 					@chmod(dirname($newPath), 0777);
 				}
-				
+
 				if (rename($path, $newPath)) {						
 					$obj = array(
 						'status' => 1,
@@ -264,195 +262,6 @@ class ProjectController extends CommonController
 				Fuse_Tool::rmEmptyDir(dirname(dirname(dirname($path))));
 			}
 		}
-	}
-
-	/**
-	 * 上传文件
-	 */
-	public function upload()
-	{
-		$projectNo = Fuse_Request::getFormatVar($this->params, 'no');
-		if (empty($projectNo)) {
-			die(json_encode(array('code'=> '1111', 'message' => '请先填写项目编号', 'data' => '')));
-		}
-
-		$name = Fuse_Request::getFormatVar($this->params, 'name');
-		if (!in_array($name, $this->fileUploadList)) {
-			die(json_encode(array('code'=> '2222', 'message' => '上传失败，参数错误', 'data' => '')));
-		}
-
-		// 判断项目编号是否重复
-		$model = new Fuse_Model();
-		$info = $model->getRow("SELECT * FROM `{$this->model->getTableProjectName()}`
-								WHERE `project_no` = '{$projectNo}' 
-								AND `company_id` = '{$this->companyId}'");
-		if (!empty($info)) {
-			die(json_encode(array('code'=> '3333', 'message' => '项目编号重复，请刷新页面重试', 'data' => '')));
-		}
-
-		$filePrefixDir = $this->tempDirName . '/projectUpoadFile/' . $projectNo . '/';
-		$saveDir = $this->rootDir . $filePrefixDir;
-
-		$fileKey = '';
-		if ($name == 'projectFile') { // 项目资料
-			$fileDir = 'project_info/';
-			$fileKey = $info['attachment'];
-		} else if ($name == 'projectContractFile') { // 合同
-			$fileDir = 'contract_info/';
-			$fileKey = $info['contract_attachment'];
-		} else if ($name == 'projectProposalFile') { // 项目提案资料
-			$fileDir = 'proposal_info/';
-			$fileKey = $info['proposal_attachment'];
-		} else if ($name == 'projectMeetingNoteFile') { // 会议纪要
-			$fileDir = 'meetingnote_info/';
-			$fileKey = $info['meetingnote_attachment'];
-		}
-
-		$saveDir .= $fileDir;
-		if (!is_dir($saveDir)) {
-			@mkdir($saveDir, 0777, true);
-			@chmod($saveDir, 0777);
-		}
-
-		require_once dirname(__FILE__) . '/upload/handler.php';
-		$uploader = new UploadHandler();
-
-		$method = $_SERVER['REQUEST_METHOD'];
-		if ($method == 'POST' && !isset($_POST['uuid'])) {
-			$uploader->sizeLimit = 1 * (1024 * 1024);
-			$uploader->inputName = 'qqfile';
-			$uploader->notAllowedExtensions = $this->notAllowedExtensions();
-			$result = $uploader->handleUpload(iconv('GB2312', 'UTF-8', $saveDir));
-			if (isset($result['error'])) {
-				die(json_encode(array('code'=> '1111', 'message' => $result['error'])));
-			}
-			
-			$result['code'] = '0000';
-			$result['uploadName'] = $uploader->getUploadName();
-			@chmod($saveDir . '/' . $result['uploadName'], 0777);
-			$result['uploadFile'] = Config_App::homeurl() . '/api' . $filePrefixDir . $fileDir . $uploader->getUploadName();
-			echo json_encode($result);
-		} else if (isset($_POST['uuid'])) {
-			$file = Fuse_Request::getFormatVar($this->params, 'uuid');
-			$file = Fuse_Tool::strToUtf8($file);
-			if (strpos($saveDir, '.') !== false || strpos($saveDir, '..') !== false) {
-				die(json_encode(array('code'=> '2222', 'message' => '文件非法', 'uuid' => $file)));
-			}
-
-			// 判断越权
-			$keyExists = false;
-			if ($fileKey != '') {
-				$keyList = explode(',', $fileKey);
-				foreach ($keyList as $key) {
-					$key = Fuse_Tool::strToUtf8($key);
-					if (strpos($key, $file) == FALSE) {
-						$keyExists = true;
-						break;
-					}
-				}
-				
-				if (!$keyExists) {
-					die(json_encode(array('code'=> '3333', 'message' => '文件不存在')));
-				}	
-			}
-			
-			$file = str_replace('/', '', $file);
-			$file1 = iconv('UTF-8', 'GBK', $file);
-			$delDir = $saveDir . $file1;
-			$result = $uploader->handleDelete($delDir);
-			if (isset($result['error'])) {
-				die(json_encode(array('code'=> '4444', 'message' => '删除失败')));
-			}
-			$result['code'] = '0000';
-			echo json_encode($result);
-		} else {
-			header('HTTP/1.0 405 Method Not Allowed');
-		}
-		exit();
-	}
-	
-	/**
-	 * 上传文件
-	 */
-	public function uploadTask()
-	{
-		$projectNo = Fuse_Request::getFormatVar($this->params, 'no');
-		$taskNo = Fuse_Request::getFormatVar($this->params, 'taskNo');
-		if ($projectNo == '' || $taskNo == '') {
-			die(json_encode(array('code'=> '1111', 'message' => '参数为空', 'data' => '')));
-		}
-
-		$name = Fuse_Request::getFormatVar($this->params, 'name');
-		if (!in_array($name, $this->fileUploadList)) {
-			die(json_encode(array('code'=> '2222', 'message' => '上传失败，参数错误', 'data' => '')));
-		}
-
-		// 判断项目任务单是否存在
-		$model = new Fuse_Model();
-		$detail = $this->model->getProjectTaskDetail($this->companyId, $projectNo, $taskNo);
-		if (!$detail) {
-			die(json_encode(array('code'=> '3333', 'message' => '项目任务单不存在', 'data' => '')));
-		}
-
-		$filePrefixDir = $this->tempDirName . '/projectUpoadFile/' . $projectNo . '/';
-		$saveDir = $this->rootDir . $filePrefixDir . $taskNo;
-
-		$saveDir .= $fileDir;
-		if (!is_dir($saveDir)) {
-			@mkdir($saveDir, 0777, true);
-			@chmod($saveDir, 0777);
-		}
-
-		require_once dirname(__FILE__) . '/upload/handler.php';
-		$uploader = new UploadHandler();
-
-		$method = $_SERVER['REQUEST_METHOD'];
-		if ($method == 'POST' && !isset($_POST['uuid'])) {
-			$uploader->sizeLimit = 1 * (1024 * 1024);
-			$uploader->inputName = 'qqfile';
-			$uploader->notAllowedExtensions = $this->notAllowedExtensions();
-			$result = $uploader->handleUpload($saveDir);
-			if (isset($result['error'])) {
-				die(json_encode(array('code'=> '4444', 'message' => $result['error'])));
-			}
-			
-			$result['code'] = '0000';
-			$result['uploadName'] = $uploader->getUploadName();
-			@chmod($saveDir . '/' . $result['uploadName'], 0777);
-			$result['uploadFile'] = Config_App::homeurl() . '/api' . $filePrefixDir . $fileDir . $uploader->getUploadName();
-			
-			// 更新
-			$object = array();
-			if (isset($detail['attachment']) && !empty($detail['attachment'])) {
-				$object['attachment'] .= ',' + $result['uploadFile'];
-			} else {
-				$object['attachment'] = $result['uploadFile'];
-			}
-			if (!$model->update($this->model->getTableTaskName(), $object, " `company_id` = '{$companyId}' AND `task_no` = '{$taskNo}' ")) {
-				die(json_encode(array('code'=> '5555', 'message' => '新增失败', 'data' => '')));
-			}
-			
-			echo json_encode($result);
-		} else if (isset($_POST['uuid'])) {
-			$file = Fuse_Request::getFormatVar($this->params, 'uuid');
-			$file = Fuse_Tool::strToUtf8($file);
-			if (strpos($saveDir, '.') !== false || strpos($saveDir, '..') !== false) {
-				die(json_encode(array('code'=> '6666', 'message' => '文件非法', 'uuid' => $file)));
-			}
-			
-			$file = str_replace('/', '', $file);
-			$file1 = iconv('UTF-8', 'GBK', $file);
-			$delDir = $saveDir . $file1;
-			$result = $uploader->handleDelete($delDir);
-			if (isset($result['error'])) {
-				die(json_encode(array('code'=> '7777', 'message' => '删除失败')));
-			}
-			$result['code'] = '0000';
-			echo json_encode($result);
-		} else {
-			header('HTTP/1.0 405 Method Not Allowed');
-		}
-		exit();
 	}
 	
 	/**
