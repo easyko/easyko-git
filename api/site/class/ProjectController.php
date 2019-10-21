@@ -45,8 +45,6 @@ class ProjectController extends CommonController
 		$this->model->setProjectTypeList($projectTypeList);
 		// 项目状态
 		$this->model->setProjectStatusList($projectStatusList);
-		// 项目文件模块类型
-		$this->modelProject->setFileUploadTypeList($fileUploadList);
 		
 		$this->tempDirName = '/temp';
 		$this->rootDir = Config_App::webdir();
