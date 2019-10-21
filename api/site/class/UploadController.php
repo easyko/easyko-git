@@ -29,9 +29,6 @@ class UploadController extends CommonController
 		
 		// 配置文件
 		include_once(dirname(__file__) . '/config.php');
-
-		
-		$this->fileUploadList = ;
 		
 		$this->modelProject = $this->createModel('Model_Project', dirname( __FILE__ ));
 		
