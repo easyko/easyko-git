@@ -29,38 +29,6 @@
             $(".cancel").click(function(){
                 $(".completed").hide();
             });
-
-            $(".getCode").click(function(){
-                if(!$(this).attr("disabled")){
-                    var vm=this;
-                    var count=59;
-                    $(this).attr("disabled",true).html("剩余60秒");
-                    var timer=setInterval(function(){
-                        $(vm).html("剩余"+count+"秒");
-                        count--;
-                        if(count ==-1){
-                            clearInterval(timer);
-                            $(vm).attr("disabled",false).html("获取短信验证码");
-                        }
-                    },1000)
-                }
-                var mobile = $(".mobile>input").val();
-                var formhash = $(".formhash").val();
-                $.post('?script=register&task=sendsms',{phone: mobile, smstype: 1, formhash: formhash},
-                    function(data) {
-                        data = JSON.parse(data);
-                        if(data.status == '1') {
-                            return;
-                        } else {
-                            //ajax返回错误
-                            $(".tip").show();
-                            $(".tip span.active").html(data.msg);
-                            return false;
-                        }
-
-                    }
-                );
-            });
         });
     </script>
 </head>

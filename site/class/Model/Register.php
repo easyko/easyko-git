@@ -64,7 +64,6 @@ class Model_Register extends Fuse_Model
             $sql_tmp .= "('" . $role_id_1 . "', '" . $i . "', '" . $company_id . "')" . (($i == $sql_1_count) ? '' : ',');
         }
         $this->db->query($sql_1.$sql_tmp);
-
         // 新增“总监”仅限 1,2,3,4,5,14,6,7,8,13,9,10,27,28,29,30,23,24,25,26
         $this->db->query("INSERT INTO `ek_role` (`role_name`, `company_id`, `create_userid`, `create_time`, `create_ip`, `update_time`, `update_userid`, `valid`) VALUES ('总监', '" . $company_id . "', '" . $user_id . "', NOW(), '" . $data['create_ip'] . "', NOW(), '" . $user_id . "', '1')");
         $role_id_2 = $this->db->lastInsertId();
