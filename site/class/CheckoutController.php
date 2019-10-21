@@ -60,9 +60,15 @@ class CheckoutController extends Fuse_Controller
         // 企业信息
         //echo '<PRE>';print_r($this->session);exit;
         $company = $this->model->getCompany($this->session->data['company_id']);
-        $data['companyName'] = $company['companyId'];
-        echo '<pre>';print_r($company);exit;
-        // 计算费用
+
+        $data['companyName'] = $company['companyName'];
+        $data['version'] = 'team';
+        $data['num'] = '3';
+        $data['year'] = '1';
+        $data['yearcaptital'] = '一';
+        $data['expiretime'] = '2018-08-20';
+        $data['perprice'] = '299';
+        $data['total'] = $data['perprice'] * (int)$data['year'] * (int)$data['num'];
 
         // 页面信息展示
 		$view 			= $this->createView();
@@ -83,7 +89,7 @@ class CheckoutController extends Fuse_Controller
      * 成员数量修改
      */
 	public function editNum(){
-
+        die(json_encode(array('status'=> 'INVALID_INPUT', 'msg' => 'ok', 'key' => 'password')));
     }
 
     /**

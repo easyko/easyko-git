@@ -22,7 +22,7 @@ class Model_Checkout extends Fuse_Model
 		$list = array();
 
 		$sql = "SELECT `company_id` AS companyId, `company_no` AS companyNo, `company_name` AS companyName, 
-					`contact_name` AS contactName, `email`, `industry_id`, `valid`, `product_id` AS productId, 
+					`contact_name` AS contactName, `email`, `industry_id` AS industryId, `valid`, `product_id` AS productId, 
 					`recommand_id` AS recommandId
 				FROM `ek_company` 
 				WHERE `company_id` = '".$companyId."'";
