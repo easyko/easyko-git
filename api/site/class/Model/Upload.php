@@ -11,6 +11,8 @@ class Model_Upload extends Fuse_Model
 {
 	// 项目文件模块类型
 	private $fileUploadTypeList = array();
+	// 文件上传临时目录
+	private $uploadTempDirName = '';
 
 	private $tableProject = array('name' => 'ek_project', 'key' => 'project_id');
 	private $tableUser 	  = array('name' => 'ek_user', 'key' => 'user_id');
@@ -141,6 +143,16 @@ class Model_Upload extends Fuse_Model
 	{
 		$this->fileUploadTypeList = $fileUploadTypeList;
 	}
+
+    public function setUploadTempDirName($uploadTempDirName)
+    {
+        $this->uploadTempDirName = $uploadTempDirName;
+    }
+
+    public function getUploadTempDirName()
+    {
+        return $this->uploadTempDirName;
+    }
 	
 	public function getTableProjectName()
 	{
