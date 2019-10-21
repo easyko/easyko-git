@@ -2,6 +2,7 @@
 // 官网地址
 $webUrl = 'my.site.com';
 
+/*
 // 项目区域
 $locationList = array(
 	'1' => array(
@@ -17,49 +18,91 @@ $locationList = array(
 		'en' => 'LD'
 	)
 );
+*/
 
 // 项目状态
-$projectStatList = array(
-	'1' => array(
-		'statusKey' => '1',
-		'statusName' => '执行中'
+$projectStatusList = array(
+	array(
+		'key' => '1',
+		'name' => '执行中'
 	),
-	'2' => array(
-		'statusKey' => '2',
-		'statusName' => '已完成'
+	array(
+		'key' => '2',
+		'name' => '已完成'
 	),
-	'3' => array(
-		'statusKey' => '3',
-		'statusName' => '已取消'
+	array(
+		'key' => '3',
+		'name' => '已取消'
 	),
-	'4' => array(
-		'statusKey' => '4',
-		'statusName' => '待回复'
+	array(
+		'key' => '4',
+		'name' => '待回复'
 	)
 );
 
 // 任务类型
-$typeList = array(
-	'1' => '策划',
-	'2' => '设计',
-	'3' => '调整',
-	'4' => '完稿'
+$projectTypeList = array(
+	array(
+		'key' => '1',
+		'name' => '策划'
+	),
+	array(
+		'key' => '2',
+		'name' => '设计'
+	),
+	array(
+		'key' => '3',
+		'name' => '调整'
+	),
+	array(
+		'key' => '4',
+		'name' => '完稿'
+	)
 );
 
-// 文件上传类别
-$fileUploadList = array(
-	'projectFile',			 // 项目资料
-	'projectContractFile',	 // 合同
-	'projectProposalFile',   // 项目提案资料
-	'projectMeetingNoteFile' // 会议纪要
+// 项目文件模块类型
+$fileUploadTypeList = array(
+	/*'projectFile',			  // 项目资料
+	'projectContractFile',	  // 合同
+	'projectProposalFile',    // 项目提案资料
+	'projectMeetingNoteFile', // 会议纪要
+	'projectTaskFile' 		  // 项目任务单资料*/
+	
+	array(
+		'id' => 1,
+		'key' => 'projectFile',
+		'name' => '项目资料'
+	),
+	array(
+		'id' => 2,
+		'key' => 'projectContractFile',
+		'name' => '合同'
+	),
+	array(
+		'id' => 3,
+		'key' => 'projectProposalFile',
+		'name' => '项目提案资料'
+	),
+	array(
+		'id' => 4,
+		'key' => 'projectMeetingNoteFile',
+		'name' => '会议纪要'
+	),
+	array(
+		'id' => 5,
+		'key' => 'projectTaskFile',
+		'name' => '项目任务单资料'
+	)
 );
 
+/*
 $roleList = array(
 	'0' => '最高权限',
 	'1' => '总监',
 	'2' => '项目经理',
 	'3' => '执行人员'
 );
+*/
 
 /*$menuList = array(
 	'0' => array(

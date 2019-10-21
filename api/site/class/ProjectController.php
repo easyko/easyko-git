@@ -10,8 +10,6 @@
 
 class ProjectController extends CommonController
 {
-	private $locationRegular = '/^(SH|GZ|LD)\d{7}$/';
-
 	/**
 	 * Constructor
 	 *
@@ -25,25 +23,13 @@ class ProjectController extends CommonController
 		$this->registerTask('index', 'projectList');
 		$this->registerTask('create', 'create');
 		$this->registerTask('upload', 'upload');
+		$this->registerTask('uploadTask', 'uploadTask');
 		$this->registerTask('projectNo', 'projectNo');
 		$this->registerTask('detailInfo', 'detailInfo');
 		$this->registerTask('detailTask', 'detailTask');
 		$this->registerTask('taskNo', 'taskNo');
 		$this->registerTask('taskCreate', 'taskCreate');
-
-		// 配置文件
-		include_once(dirname(__file__) . '/config.php');
-
-		// 项目区域
-		$this->locationList = $locationList;
-
-		// 项目状态
-		$this->projectStatList = $projectStatList;
-
-		// 任务类型
-		$this->projectTypeList = $typeList;
-
-		$this->fileUploadList = $fileUploadList;
+		$this->registerTask('projectTypeList', 'projectTypeList');
 
 		$this->projectDescLen  = 1000;
 		$this->commentLen 	   = 120;
@@ -51,6 +37,19 @@ class ProjectController extends CommonController
 		$this->feedbackLen	   = 1000;
 		
 		$this->model = $this->createModel('Model_Project', dirname( __FILE__ ));
+		$this->modelUpload = $this->createModel('Model_Upload', dirname( __FILE__ ));
+		
+		// 配置文件
+		include_once(dirname(__file__) . '/config.php');
+		// 任务类型
+		$this->model->setProjectTypeList($projectTypeList);
+		// 项目状态
+		$this->model->setProjectStatusList($projectStatusList);
+		// 项目文件模块类型
+		$this->modelProject->setFileUploadTypeList($fileUploadList);
+		
+		$this->tempDirName = '/temp';
+		$this->rootDir = Config_App::webdir();
 	}
 
 	/**
@@ -91,7 +90,7 @@ class ProjectController extends CommonController
 		}
 
 		if (isset($_GET['export'])) {
-			$itemList = $this->model->getList(0, 0, $where, $this->projectStatList);
+			$itemList = $this->model->getList(0, 0, $where);
 			$this->export($itemList);
 		}
 
@@ -101,7 +100,7 @@ class ProjectController extends CommonController
 
 		$paginator = new Fuse_Paginator($totalitems, $page, $perpage, 10);
 		$limit     = $paginator->getLimit();
-		$itemList  = $this->model->getList($limit['start'], $limit['offset'], $where, $this->projectStatList);
+		$itemList  = $this->model->getList($limit['start'], $limit['offset'], $where);
 
         $itemTitle = array(
 			'itemNo'   	   => '序号',
@@ -121,6 +120,7 @@ class ProjectController extends CommonController
 		if (!empty($itemList)) {
 			foreach ($itemList as $key => &$value) {
 				$value['itemNo'] = ($page - 1) * $perpage + 1 + $key;
+				$value['status'] = $this->model->getProjectStatusById($value['status']);
 			}
 		}
 
@@ -148,7 +148,7 @@ class ProjectController extends CommonController
 		$customerName = Fuse_Request::getFormatVar($this->params, 'customerName');
 		$startDate 	  = Fuse_Request::getFormatVar($this->params, 'startDate');
 		$endDate 	  = Fuse_Request::getFormatVar($this->params, 'endDate');
-		$managerId 	  = Fuse_Request::getFormatVar($this->params, 'managerId', '1');
+		$managerId 	  = Fuse_Request::getFormatVar($this->params, 'managerId', 1);
 		$projectDesc  = Fuse_Request::getFormatVar($this->params, 'projectDesc');
 		$attachment   = Fuse_Request::getFormatVar($this->params, 'attachment');
 
@@ -189,11 +189,6 @@ class ProjectController extends CommonController
 			}
 		}
 
-		$projectFileList = explode(',', Fuse_Request::getFormatVar($this->params, 'projectFile'));
-		if (empty($projectFileList)) {
-			die(json_encode(array('code'=> '6666', 'message' => '请上传项目资料', 'data' => '')));
-		}
-
 		$time = Config_App::getTime();
 		$ip   = Config_App::getIP();
 		$object = array(
@@ -213,124 +208,60 @@ class ProjectController extends CommonController
 			'company_id' 			 => $this->companyId
 		);
 
-		$model = new Fuse_Model();
+		// $model = new Fuse_Model();
 		if ($projectId && $projectNo) {
-			$model->update($this->model->getTableProjectName(), $object, " `project_no` = '{$projectNo}' ");
+			$this->model->update($this->model->getTableProjectName(), $object, " `company_id` = '{$this->companyId}' AND `project_no` = '{$projectNo}' ");
 			$returnId = $projectNo;
 		} else {
-			$returnId = $model->store($this->model->getTableProjectName(), $object);
+			$returnId = $this->model->store($this->model->getTableProjectName(), $object);
 			if (!$returnId) {
-				die(json_encode(array('code'=> '7777', 'message' => '创建失败', 'data' => '')));
+				die(json_encode(array('code'=> '6666', 'message' => '创建失败', 'data' => '')));
 			}
+
+			// 移动文件到正式目录
+			$this->moveFile($projectNo);
 		}
 
 		die(json_encode(array('code'=> '0000', 'message' => '创建成功', 'data' => '')));
 	}
-
+	
 	/**
-	 * 上传文件
+	 * 移动文件到正式目录
 	 */
-	public function upload()
+	private function moveFile($projectNo) 
 	{
-		$projectNo = Fuse_Request::getFormatVar($this->params, 'no');
-		if (empty($projectNo)) {
-			die(json_encode(array('code'=> '1111', 'message' => '请先填写项目编号', 'data' => '')));
-		}
+		$modelUpload = $this->createModel('Model_Upload', dirname( __FILE__ ));
+		$tempList = $modelUpload->getTempFileList($this->companyId, $projectNo);
+		if (!empty($tempList)) {
+			foreach ($tempList as $temp) {
+				$attach = $temp['file_url'];
 
-		$name = Fuse_Request::getFormatVar($this->params, 'name');
-		if (!in_array($name, $this->fileUploadList)) {
-			die(json_encode(array('code'=> '2222', 'message' => '上传失败，参数错误', 'data' => '')));
-		}
+				$pos = strpos($attach, $this->tempDirName);
+				$tempFile = substr($attach, $pos + strlen($this->tempDirName));
+				$path = $this->rootDir . $this->tempDirName . $tempFile;
+				$newPath = $this->rootDir . $tempFile;
 
-		// 判断项目编号是否重复
-		$model = new Fuse_Model();
-		$info = $model->getRow("SELECT * FROM `{$this->model->getTableProjectName()}`
-								WHERE `project_no` = '{$projectNo}' 
-								AND `company_id` = '{$this->companyId}'");
-		if (!empty($info)) {
-			die(json_encode(array('code'=> '3333', 'message' => '项目编号重复，请刷新页面重试', 'data' => '')));
-		}
+				if (!file_exists($path)) {
+					continue;
+				}
 
-		$rootDir = Config_App::rootdir();
-		$filePrefixDir = '/temp/projectUpoadFile/' . $projectNo . '/';
-		$saveDir = $rootDir . $filePrefixDir;
+				if (!is_dir(dirname($newPath))) {
+					@mkdir(dirname($newPath), 0777, true);
+					@chmod(dirname($newPath), 0777);
+				}
 
-		$fileKey = '';
-		if ($name == 'projectFile') { // 项目资料
-			$fileDir = 'project_info/';
-			$fileKey = $info['attachment'];
-		} else if ($name == 'projectContractFile') { // 合同
-			$fileDir = 'contract_info/';
-			$fileKey = $info['contract_attachment'];
-		} else if ($name == 'projectProposalFile') { // 项目提案资料
-			$fileDir = 'proposal_info/';
-			$fileKey = $info['proposal_attachment'];
-		} else if ($name == 'projectMeetingNoteFile') { // 会议纪要
-			$fileDir = 'meetingnote_info/';
-			$fileKey = $info['meetingnote_attachment'];
-		}
-
-		$saveDir .= $fileDir;
-		if (!is_dir($saveDir)) {
-			@mkdir($saveDir, 0777, true);
-			@chmod($saveDir, 0777);
-		}
-
-		require_once dirname(__FILE__) . '/upload/handler.php';
-		$uploader = new UploadHandler();
-
-		$method = $_SERVER['REQUEST_METHOD'];
-		if ($method == 'POST' && !isset($_POST['uuid'])) {
-			$uploader->sizeLimit = 1 * (1024 * 1024);
-			$uploader->inputName = 'qqfile';
-			$uploader->notAllowedExtensions = array('exe', 'js', 'css');
-			$result = $uploader->handleUpload($saveDir);
-			if (isset($result['error'])) {
-				die(json_encode(array('code'=> '1111', 'message' => $result['error'])));
-			}
-			
-			$result['code'] = '0000';
-			$result['uploadName'] = $uploader->getUploadName();
-			@chmod($saveDir . '/' . $result['uploadName'], 0777);
-			$result['uploadFile'] = Config_App::homeurl() . '/api' . $filePrefixDir . $fileDir . $uploader->getUploadName();
-			echo json_encode($result);
-		} else if (isset($_POST['uuid'])) {
-			$file = Fuse_Request::getFormatVar($this->params, 'uuid');
-			$file = Fuse_Tool::strToUtf8($file);
-			if (strpos($saveDir, '.') !== false || strpos($saveDir, '..') !== false) {
-				die(json_encode(array('code'=> '2222', 'message' => '文件非法', 'uuid' => $file)));
-			}
-
-			// 判断越权
-			$keyExists = false;
-			if ($fileKey != '') {
-				$keyList = explode(',', $fileKey);
-				foreach ($keyList as $key) {
-					$key = Fuse_Tool::strToUtf8($key);
-					if (strpos($key, $file) == FALSE) {
-						$keyExists = true;
-						break;
-					}
+				if (rename($path, $newPath)) {						
+					$obj = array(
+						'status' => 1,
+						'file_url' => str_replace($this->tempDirName, '', $temp['file_url'])
+					);
+					$this->model->update($modelUpload->getTableFileName(), $obj, " `company_id` = '{$this->companyId}' AND `file_id` = '{$temp['file_id']}' ");
 				}
 				
-				if (!$keyExists) {
-					die(json_encode(array('code'=> '3333', 'message' => '文件不存在')));
-				}	
+				// 删除空目录
+				Fuse_Tool::rmEmptyDir(dirname(dirname(dirname($path))));
 			}
-			
-			$file = str_replace('/', '', $file);
-			$file1 = iconv('UTF-8', 'GBK', $file);
-			$delDir = $saveDir . $file1;
-			$result = $uploader->handleDelete($delDir);
-			if (isset($result['error'])) {
-				die(json_encode(array('code'=> '4444', 'message' => '删除失败')));
-			}
-			$result['code'] = '0000';
-			echo json_encode($result);
-		} else {
-			header('HTTP/1.0 405 Method Not Allowed');
 		}
-		exit();
 	}
 	
 	/**
@@ -344,7 +275,7 @@ class ProjectController extends CommonController
 		}
 
 		// 详情
-		$detail = $this->model->getProjectDetail($this->companyId, $projectNo, $this->projectTypeList);
+		$detail = $this->model->getProjectDetail($this->companyId, $projectNo);
 		if (empty($detail)) {
 			die(json_encode(array('code'=> '2222', 'message' => '项目不存在', 'data' => '')));
 		}
@@ -356,8 +287,7 @@ class ProjectController extends CommonController
 			'users' 	  => $detail['taskUsers'], 
 			'workHours'   => $detail['workTime'] . '人天', 
 			'projectTime' => $detail['projectTime'],
-			'statusList'  => $this->projectStatList,
-			'typeList' 	  => $this->projectTypeList,
+			'statusList'  => $this->model->projectStatusList(),
 			'status' 	  => '1'
 		);
 		die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $data)));
@@ -373,10 +303,10 @@ class ProjectController extends CommonController
 			die(json_encode(array('code'=> '1111', 'message' => '参数丢失', 'data' => '')));
 		}
 		
-		$itemList = $this->model->getTaskList($this->companyId, $projectNo, $this->projectTypeList);
+		$itemList = $this->model->getTaskList($this->companyId, $projectNo);
 
 		$itemTitle = array(
-			'taskFile' => '',
+			'taskFile' => '成果文件',
 			'taskNo' => '任务工单',
 			'taskDesc' => '任务描述',
 			'type' => '任务类型',
@@ -420,17 +350,20 @@ class ProjectController extends CommonController
 		$taskNo = Fuse_Request::getFormatVar($this->params, 'taskNo');     
 		$taskDesc = Fuse_Request::getFormatVar($this->params, 'taskDesc');
 		$taskType = Fuse_Request::getFormatVar($this->params, 'taskType', 1);
-		$startTime = Fuse_Request::getFormatVar($this->params, 'startTime');
-		$endTime = Fuse_Request::getFormatVar($this->params, 'endTime');
+		$projectTime = Fuse_Request::getFormatVar($this->params, 'projectTime');
 		$planScore = Fuse_Request::getFormatVar($this->params, 'planScore');
 		
 		if (empty($projectId) || empty($userId) || empty($taskType)
-			|| $taskNo == '' || $taskDesc == '' || $startTime == ''
-			|| $endTime == '' || $planScore == ''
+			|| $taskNo == '' || $taskDesc == '' || $projectTime == '' || $planScore == ''
 		) {
 			die(json_encode(array('code'=> '1111', 'message' => '必填参数为空，请仔细检查', 'data' => '')));
 		}
 		
+		$projectTimeArr = explode('-', str_replace(' ', '', $projectTime)); 
+		if (count($projectTimeArr) != 2) {
+			die(json_encode(array('code'=> '2222', 'message' => '计划开始和结束时间有误，请仔细检查', 'data' => '')));
+		}
+
 		$object = array(
 			'project_id' => $projectId,
 			'company_id' => $this->companyId,
@@ -438,18 +371,32 @@ class ProjectController extends CommonController
 			'task_desc'  => $taskDesc,
 			'task_no' 	 => $taskNo,
 			'type' 		 => $taskType,
-			'start_time' => $startTime,
-			'endTime'    => $endTime,
+			'start_time' => str_replace('/', '-', $projectTimeArr['0']),
+			'end_time'    => str_replace('/', '-', $projectTimeArr['1']),
 			'plan_score' => $planScore,
-			'ip' 		 => $ip,
-			'time' 		 => $time,
+			'ip' 		 => Config_App::getIP(),
+			'time' 		 => Config_App::getTime(),
 			'valid'		 => '1',
 			'is_read'    => 0
 		);
 		
-		$model = new Fuse_Model();
-		$model->update($this->model->getTableTaskName(), $object, " `task_id` = '{$taskId}' AND `task_no` = '{$taskNo}' ");
+		if (strtotime($object['start_time']) > strtotime($object['end_time'])) {
+			die(json_encode(array('code'=> '3333', 'message' => '开始时间应该早于结束时间', 'data' => '')));
+		}
 
-		die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => '')));
+		$model = new Fuse_Model();
+		if (!$model->update($this->model->getTableTaskName(), $object, " `task_id` = '{$taskId}' AND `task_no` = '{$taskNo}' ")) {
+			die(json_encode(array('code'=> '4444', 'message' => '新增失败', 'data' => '')));
+		}
+
+		die(json_encode(array('code'=> '0000', 'message' => '新增成功', 'data' => '')));
+	}
+	
+	/**
+	 * 任务单类型
+	 */
+	public function projectTypeList()
+	{
+		die(json_encode(array('code'=> '0000', 'message' => '成功', 'data' => $this->model->getProjectTypeList())));
 	}
 }

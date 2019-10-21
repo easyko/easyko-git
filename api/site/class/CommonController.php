@@ -34,7 +34,7 @@ class CommonController extends Fuse_Controller
 
 		// 获取json或post等提交的参数
 		$this->params = $this->initParamsData();
-		
+
 		// 参数校验
 		$this->checkParams($this->params);
 
@@ -144,6 +144,7 @@ class CommonController extends Fuse_Controller
         if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json') {
             $content = file_get_contents('php://input');
             $content = json_decode($content, true);
+            $content = !empty($content) ? Fuse_Filter_Input::shtmlspecialchars($content) : array();
         } else {
             $content = $_REQUEST;
         }

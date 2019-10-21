@@ -11,7 +11,7 @@ class Model_Performance extends Fuse_Model
 {
 	private $tableProject  = array('name' => 'ek_project_list', 'key' => 'project_id');
 	private $tableUser 	   = array('name' => 'ek_user', 'key' => 'user_id');
-	private $tableExecUser = array('name' => 'ek_project_exec_users', 'key' => 'execuser_id');
+	private $tableExecUser = array('name' => 'ek_project_task', 'key' => 'task_id');
 
 
 	public function __construct($config=array())
@@ -27,7 +27,7 @@ class Model_Performance extends Fuse_Model
 		$list = array();
 
 		$sql = "SELECT pl.project_no AS projectNo, pl.project_name AS projectName, ul.username,
-					pe.job_no AS jobNo, pe.type, pe.start_time AS startTime, pe.end_time AS endTime,
+					pe.task_no AS jobNo, pe.type, pe.start_time AS startTime, pe.end_time AS endTime,
 					pe.work_unit AS workUnit, pe.plan_score AS planScore,pe.real_score AS realScore,
 					pe.attachment, pe.`finished_time` AS finishedTime
 				FROM `{$this->tableProject['name']}` pl
@@ -137,7 +137,7 @@ class Model_Performance extends Fuse_Model
 	{
 		$list = array();
 
-		$sql = "SELECT * FROM `{$this->tableExecUser['name']}` WHERE `job_no` = '{$jobNo}' LIMIT 1";
+		$sql = "SELECT * FROM `{$this->tableExecUser['name']}` WHERE `task_no` = '{$jobNo}' LIMIT 1";
 
 		if ($stmt = $this->db->query($sql)) {
 			if ($row = $stmt->fetch()) {
