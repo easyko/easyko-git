@@ -44,6 +44,7 @@ class UploadController extends CommonController
 
         $this->rootDir = Config_App::webdir();
         $this->homeDir = Config_App::homeurl() . '/easyku';
+		// $this->homeDir = Config_App::homeurl();
 
         // 上传插件
         require_once dirname(__FILE__) . '/upload/handler.php';
@@ -77,11 +78,13 @@ class UploadController extends CommonController
 
         $method = $_SERVER['REQUEST_METHOD'];
         if ($method != 'POST') {
-            die(json_encode(array('code'=> '3333', 'message' => '上传方式错误', 'data' => '')));
+            //die(json_encode(array('code'=> '3333', 'message' => '上传方式错误', 'data' => '')));
         }
 
-		if (!isset($_FILES[$this->uploader->inputName]['name']) || empty($_FILES[$this->uploader->inputName]['name'])) {
-			die(json_encode(array('code'=> '4444', 'message' => '上传文件不可为空，请选择文件', 'data' => '')));
+		if (!isset($_REQUEST['uuid'])) {
+			if (!isset($_FILES[$this->uploader->inputName]['name']) || empty($_FILES[$this->uploader->inputName]['name'])) {
+				die(json_encode(array('code'=> '4444', 'message' => '上传文件不可为空，请选择文件', 'data' => '')));
+			}
 		}
 
         // 文件保存目录
@@ -91,18 +94,21 @@ class UploadController extends CommonController
         } else {
             $fileDir .= $fileType;
         }
-        $saveDir = $this->rootDir . $fileDir;
-        $saveDir = iconv('GB2312', 'UTF-8', $saveDir);
+        $saveDir = $this->rootDir . $fileDir . '/';
+        $saveDir = Fuse_Tool::strToUtf8($saveDir);
+        
+        if (!isset($_REQUEST['uuid'])) {
+			if (!is_dir($saveDir)) {
+				@mkdir($saveDir, 0777, true);
+				@chmod($saveDir, 0777);
+			}
 
-        if (!is_dir($saveDir)) {
-            @mkdir($saveDir, 0777, true);
-            @chmod($saveDir, 0777);
+			// 文件名，扩张名方法里补充完整
+			$filename = Fuse_Tool::getRandStr(10);
         }
 
-        // 文件名，扩张名方法里补充完整
-        $filename = Fuse_Tool::getRandStr(10);
-
-        if (!isset($_POST['uuid'])) {
+		// 上传并保存文件
+        if (!isset($_REQUEST['uuid'])) {
             $result = $this->uploader->handleUpload($saveDir, $filename);
             if (isset($result['error'])) {
                 die(json_encode(array('code'=> '5555', 'message' => $result['error'])));
@@ -110,18 +116,20 @@ class UploadController extends CommonController
 
             $result['code'] = '0000';
             $result['uploadName'] = $this->uploader->getUploadName();
-            @chmod($saveDir . '/' . $result['uploadName'], 0777);
+            //print_r($result);var_dump($this->homeDir);var_dump($fileDir);die;
+            @chmod($saveDir . $result['uploadName'], 0777);
             $result['uploadFile'] = $this->homeDir . $fileDir . '/' . $result['name'];
 
             // 保存文件
             $this->saveFileAction($result, $fileType, $projectNo, $taskNo);
-        } else if (isset($_POST['uuid'])) {
+        } else if (isset($_REQUEST['uuid'])) {
+			// 删除文件
             $file = Fuse_Request::getFormatVar($this->params, 'uuid');
-            $file = Fuse_Tool::strToUtf8($file);
-            if (strpos($saveDir, '.') !== false || strpos($saveDir, '..') !== false) {
+            // if (strpos($file, '.') !== false || strpos($file, '..') !== false) {
+			if (strpos($file, '..') !== false) {
                 die(json_encode(array('code'=> '6666', 'message' => '文件非法', 'uuid' => $file)));
             }
-
+ 
             // 判断越权
             /*$keyExists = false;
             if ($fileKey != '') {
@@ -139,8 +147,7 @@ class UploadController extends CommonController
                 }
             }*/
 
-            $file = iconv('UTF-8', 'GBK', str_replace('/', '', $file));
-            $delDir = $saveDir . $file;
+            $delDir = $saveDir . Fuse_Tool::strToUtf8($file);
             $result = $this->uploader->handleDelete($delDir);
             if (isset($result['error'])) {
                 die(json_encode(array('code'=> '8888', 'message' => '删除失败')));
