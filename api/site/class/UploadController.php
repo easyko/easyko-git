@@ -53,8 +53,6 @@ class UploadController extends CommonController
         $this->uploader->notAllowedExtensions = array('exe', 'js', 'css', 'sql');
     }
 
-
-
     /**
      * 上传文件
      */
@@ -77,6 +75,15 @@ class UploadController extends CommonController
             die(json_encode(array('code'=> '2222', 'message' => '非指定模块类型文件', 'data' => '')));
         }
 
+        $method = $_SERVER['REQUEST_METHOD'];
+        if ($method != 'POST') {
+            die(json_encode(array('code'=> '3333', 'message' => '上传方式错误', 'data' => '')));
+        }
+
+		if (!isset($_FILES[$this->uploader->inputName]['name']) || empty($_FILES[$this->uploader->inputName]['name'])) {
+			die(json_encode(array('code'=> '4444', 'message' => '上传文件不可为空，请选择文件', 'data' => '')));
+		}
+
         // 文件保存目录
         $fileDir = $this->tempDirName . '/upload/' . $projectNo . '/';
         if ($taskNo != '') {
@@ -90,11 +97,6 @@ class UploadController extends CommonController
         if (!is_dir($saveDir)) {
             @mkdir($saveDir, 0777, true);
             @chmod($saveDir, 0777);
-        }
-
-        $method = $_SERVER['REQUEST_METHOD'];
-        if ($method != 'POST') {
-            die(json_encode(array('code'=> '4444', 'message' => '上传方式错误', 'data' => '')));
         }
 
         // 文件名，扩张名方法里补充完整
@@ -117,11 +119,11 @@ class UploadController extends CommonController
             $file = Fuse_Request::getFormatVar($this->params, 'uuid');
             $file = Fuse_Tool::strToUtf8($file);
             if (strpos($saveDir, '.') !== false || strpos($saveDir, '..') !== false) {
-                die(json_encode(array('code'=> '2222', 'message' => '文件非法', 'uuid' => $file)));
+                die(json_encode(array('code'=> '6666', 'message' => '文件非法', 'uuid' => $file)));
             }
 
             // 判断越权
-            $keyExists = false;
+            /*$keyExists = false;
             if ($fileKey != '') {
                 $keyList = explode(',', $fileKey);
                 foreach ($keyList as $key) {
@@ -133,16 +135,15 @@ class UploadController extends CommonController
                 }
 
                 if (!$keyExists) {
-                    die(json_encode(array('code'=> '3333', 'message' => '文件不存在')));
+                    die(json_encode(array('code'=> '7777', 'message' => '文件不存在')));
                 }
-            }
+            }*/
 
-            $file = str_replace('/', '', $file);
-            $file1 = iconv('UTF-8', 'GBK', $file);
-            $delDir = $saveDir . $file1;
+            $file = iconv('UTF-8', 'GBK', str_replace('/', '', $file));
+            $delDir = $saveDir . $file;
             $result = $this->uploader->handleDelete($delDir);
             if (isset($result['error'])) {
-                die(json_encode(array('code'=> '4444', 'message' => '删除失败')));
+                die(json_encode(array('code'=> '8888', 'message' => '删除失败')));
             }
             $result['code'] = '0000';
             echo json_encode($result);
