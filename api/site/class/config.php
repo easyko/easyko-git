@@ -2,6 +2,9 @@
 // 官网地址
 $webUrl = 'my.site.com';
 
+// 文件上传临时目录
+$uploadTempDirName = '/temp';
+
 /*
 // 项目区域
 $locationList = array(
