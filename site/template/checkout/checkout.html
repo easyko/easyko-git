@@ -2,21 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{$title}</title>
+    <title>{$title}{$data['years']}</title>
     <link rel="stylesheet" href="css/css.css">
     <script src="js/jquery-1.12.3.min.js"></script>
+    {literal}
+
     <script>
+
         $(function(){
+            // var years = "{$data['years']}";
+            // $(".purLife>input[name='purLife'][value=" + years + "]").prop("checked", "checked");
             //版本切换
             $(".edition li").click(function(){
                 $(this).addClass("active").siblings().removeClass("active");
             });
+            /*
             //第一步提胶支付
             $(".totalPrice button").click(function(){
                 $(".step1").hide();
                 $(".step2").show();
                 $(".purTop li:eq(1)").addClass("active").siblings().removeClass("active");
             });
+             */
             //第二步立即支付
             $(".payment").click(function(){
                 $(".completed").show();
@@ -30,39 +37,36 @@
                 $(".completed").hide();
             });
 
-            $(".getCode").click(function(){
-                if(!$(this).attr("disabled")){
-                    var vm=this;
-                    var count=59;
-                    $(this).attr("disabled",true).html("剩余60秒");
-                    var timer=setInterval(function(){
-                        $(vm).html("剩余"+count+"秒");
-                        count--;
-                        if(count ==-1){
-                            clearInterval(timer);
-                            $(vm).attr("disabled",false).html("获取短信验证码");
-                        }
-                    },1000)
-                }
-                var mobile = $(".mobile>input").val();
+            $(".memberNum>input").blur(function(){
+                var num = $(".memberNum>input").val();
                 var formhash = $(".formhash").val();
-                $.post('?script=register&task=sendsms',{phone: mobile, smstype: 1, formhash: formhash},
+                postData(num, '', '', formhash);
+            });
+
+            $(".purLife>input:radio").click(function(){
+                var years = $(this).val();
+                var yearcaptital = $(this).attr("yearcaptital");
+                var formhash = $(".formhash").val();
+                postData('', years, yearcaptital, formhash);
+            });
+
+            function postData(num, years, yearcaptital, formhash) {
+                $.post('?script=checkout&task=editData',{num: num, years: years, yearcaptital: yearcaptital, formhash: formhash},
                     function(data) {
                         data = JSON.parse(data);
-                        if(data.status == '1') {
-                            return;
-                        } else {
-                            //ajax返回错误
-                            $(".tip").show();
-                            $(".tip span.active").html(data.msg);
-                            return false;
-                        }
-
+                        $(".price span.num").html(data.num);
+                        $(".price span.years").html(data.years);
+                        $(".price span.yearcaptital").html(data.yearcaptital);
+                        $(".price span.total").html(data.total);
+                        $(".totalPrice span.active").html(data.total);
+                        return;
                     }
                 );
-            });
+            }
+
         });
     </script>
+    {/literal}
 </head>
 <body>
 <div class="purTop">
@@ -92,8 +96,8 @@
     <div class="edition">
         <p>选择版本：</p>
         <ul>
-            <li class="active">团队版</li>
-            <li>企业版</li>
+            <li class="active" id="team">团队版</li>
+            <li id="company">企业版</li>
         </ul>
     </div>
     <div class="memberNum">
@@ -103,60 +107,18 @@
     </div>
     <div class="purLife">
         <p>购买年限：</p>
-        <ul>
-            <li><input name="purLife" type="radio" id="radio1" checked><label for="radio1">1年</label></li>
-            <li><input name="purLife" type="radio" id="radio2"><label for="radio2">2年</label></li>
-            <li><input name="purLife" type="radio" id="radio3"><label for="radio3">3年</label></li>
-            <li><input name="purLife" type="radio" id="radio4"><label for="radio4">5年</label></li>
-        </ul>
+        <input name="purLife" type="radio" id="radio1" value="1" yearcaptital="一" checked>1年
+        <input name="purLife" type="radio" id="radio2" value="2" yearcaptital="二">2年
+        <input name="purLife" type="radio" id="radio3" value="3" yearcaptital="三">3年
+        <input name="purLife" type="radio" id="radio4" value="5" yearcaptital="五">5年
     </div>
     <div class="price">
-        <p><span>{$data['perprice']}元</span>/人/年 * <span>{$data['num']}</span>人 * <span>{$data['year']}</span>年 = <span>{$data['total']}</span>元</p>
-        <p>购买后企业（团队）可容纳<span>{$data['num']}</span>个成员，期限为<span>{$data['yearcaptital']}</span>年，到期时间为<span>$data['expiretime']</span></p>
+        <p><span class="perprice">{$data['perprice']}元</span>/人/年 * <span class="num">{$data['num']}</span>人 * <span class="years">{$data['years']}</span>年 = <span class="total">{$data['total']}</span>元</p>
+        <p>购买后企业（团队）可容纳<span class="num">{$data['num']}</span>个成员，期限为<span class="yearcaptital">{$data['yearcaptital']}</span>年，到期时间为<span class="expiretime">{$data['expiretime']}</span></p>
     </div>
     <div class="totalPrice">
-        <p>总计：<span>{$data['total']}</span>元</p>
-        <button></button>
-    </div>
-</div>
-<div class="content step2">
-    <div class="contentTop">
-        <img src="img/car.png">
-        <p>订单详情：12345679123658525</p>
-    </div>
-    <div class="detailContent">
-        <p><span>企业团队名称：</span><span>上海银河创意</span></p>
-        <p><span>选择版本：</span><span>团队版</span></p>
-        <p><span>成员数量：</span><span>13</span></p>
-        <p><span>购买年限：</span><span>1年</span></p>
-        <p><span>总计：</span><span>16000元</span></p>
-        <div class="actual">
-            <p><span>实付：</span><span>13000元</span></p>
-            <div class="code">
-                <input type="checkbox">
-                <span>使用推荐码</span>
-                <input type="text">
-            </div>
-        </div>
-    </div>
-    <div class="choice">
-        <p>选择购买方式：</p>
-        <ul>
-            <li class="active"></li>
-            <li></li>
-        </ul>
-    </div>
-    <button class="payment">立即支付</button>
-</div>
-<div class="completed">
-    <div class="comContent">
-        <p>已完成在线支付？</p>
-        <p>请先进行在线支付，如已完成支付，请点击完成。</p>
-        <button class="cancel"></button>
-        <ul>
-            <li>立即支付</li>
-            <li>支付遇到问题</li>
-        </ul>
+        <p>总计：<span class="active">{$data['total']}</span>元</p>
+        <a href="?script=confirm"><button></button></a>
     </div>
 </div>
 </body>

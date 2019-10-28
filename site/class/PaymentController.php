@@ -7,7 +7,7 @@
  * @author	jerry.cao (caowlong163@163.com)
  * $date    2019-05-18 23:49:31
  */
-class CheckoutController extends Fuse_Controller
+class PaymentController extends Fuse_Controller
 {
 	private $url = '/product';
     protected $language = array(
@@ -62,20 +62,18 @@ class CheckoutController extends Fuse_Controller
         $company = $this->model->getCompany($this->session->data['company_id']);
 
         $data['companyName'] = $this->session->data['companyName'] = $company['companyName'];
-        $data['version'] = isset($this->session->data['version']) ? $this->session->data['version'] : 'team';
-        $data['num'] = isset($this->session->data['num']) ? $this->session->data['num'] : '3';
-        $data['years'] = '3';//isset($this->session->data['years']) ? $this->session->data['years'] : '1';
-        $data['yearcaptital'] = isset($this->session->data['yearcaptital']) ? $this->session->data['yearcaptital'] : '一';
-        $data['expiretime'] = '2018-08-20';
-        $data['perprice'] = $this->session->data['perprice'] = '299';
-        $data['total'] = $this->session->data['total'] = $data['perprice'] * (int)$data['years'] * (int)$data['num'];
+        //$data['version'] = $this->session->data['version'] = 'team';
+        $data['num'] = $this->session->data['num'];
+        $data['years'] = $this->session->data['years'];
+        $data['perprice'] = $this->session->data['perprice'];
+        $data['total'] = $this->session->data['total'];
 
         // 页面信息展示
 		$view 			= $this->createView();
         $view->formhash = Config_App::formhash('checkout');
 		$view->data 	= $data;
 		$view->title	= $this->language['title'];
-		$view->display('../checkout/checkout.html');
+		$view->display('../checkout/payment.html');
 	}
 
     /**

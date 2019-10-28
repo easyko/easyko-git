@@ -43,6 +43,11 @@ require_once 'CommonController.php';
 // functions
 require_once 'functions.php';
 
+// wxpay
+require_once "wxpay/lib/WxPay.Api.php";
+require_once "wxpay/WxPay.Config.php";
+require_once 'wxpay/log.php';
+
 //view var
 defined('HOMEURL') || define('HOMEURL', Config_App::homeurl());
 
