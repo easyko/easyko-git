@@ -8,3 +8,4 @@ site/template/compile/
 
 # 忽略日志文件
 site/library/wxpay/logs/
+site/library/logs/
