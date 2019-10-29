@@ -76,7 +76,7 @@ class NativePayController extends Fuse_Controller
         $data['expire_time'] = '600'; // 订单失效时间
         $data['time_expire'] = date("YmdHis", time() + $data['expire_time']);
         //$data['notify_url'] = "http://paysdk.weixin.qq.com/notify.php";//异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。
-        $data['notify_url'] = "http://easyku.dev.integration.local/site/library/wxpay/notify.php";
+        $data['notify_url'] = "http://www.easyko.cn/site/library/wxpay/notify.php";
         $data['product_id'] = "123456789";
 
        // echo '<pre>';print_r($data);exit;
