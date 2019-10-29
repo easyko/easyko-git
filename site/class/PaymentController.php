@@ -59,15 +59,16 @@ class PaymentController extends Fuse_Controller
 		//$data['serverList'] = $this->model->getServerList();
 
         // 企业信息
-        $company = $this->model->getCompany($this->session->data['company_id']);
+        //$company = $this->model->getCompany($this->session->data['company_id']);
 
-        $data['companyName'] = $this->session->data['companyName'] = $company['companyName'];
+        $data['companyName'] = $this->session->data['companyName'];
         //$data['version'] = $this->session->data['version'] = 'team';
         $data['num'] = $this->session->data['num'];
         $data['years'] = $this->session->data['years'];
         $data['perprice'] = $this->session->data['perprice'];
         $data['total'] = $this->session->data['total'];
 
+        exit;
         // 页面信息展示
 		$view 			= $this->createView();
         $view->formhash = Config_App::formhash('checkout');

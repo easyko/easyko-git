@@ -43,7 +43,7 @@ class CheckoutController extends Fuse_Controller
         //$this->roleId   = Fuse_Session::getInstance()->role_id;
         $this->username = Fuse_Session::getInstance()->data['username'];
 
-        $this->model = $this->createModel('Model_Checkout', dirname( __FILE__ ));
+        $this->model = $this->createModel('Model_Product', dirname( __FILE__ ));
 
         $this->session = Fuse_Session::getInstance();
 	}
@@ -60,14 +60,15 @@ class CheckoutController extends Fuse_Controller
 
         // 企业信息
         $company = $this->model->getCompany($this->session->data['company_id']);
-
+        $product = $this->model->getProductById(Fuse_Request::getVar('id', 'get'));
+        $this->session->data['product'] = $product;
         $data['companyName'] = $this->session->data['companyName'] = $company['companyName'];
         $data['version'] = isset($this->session->data['version']) ? $this->session->data['version'] : 'team';
         $data['num'] = isset($this->session->data['num']) ? $this->session->data['num'] : '3';
-        $data['years'] = '3';//isset($this->session->data['years']) ? $this->session->data['years'] : '1';
+        $data['years'] = isset($this->session->data['years']) ? $this->session->data['years'] : '1';
         $data['yearcaptital'] = isset($this->session->data['yearcaptital']) ? $this->session->data['yearcaptital'] : '一';
-        $data['expiretime'] = '2018-08-20';
-        $data['perprice'] = $this->session->data['perprice'] = '299';
+        $data['expiretime'] = date("Y-m-d", strtotime("+1 year", strtotime($product['create_time'])));
+        $data['perprice'] = $this->session->data['perprice'] = $product['price'];
         $data['total'] = $this->session->data['total'] = $data['perprice'] * (int)$data['years'] * (int)$data['num'];
 
         // 页面信息展示

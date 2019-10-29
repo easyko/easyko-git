@@ -18,66 +18,37 @@ class Model_Checkout extends Fuse_Model
 		parent::__construct($config);
 	}
 
-	public function getCompany($companyId) {
+	public function addOrder($data) {
+		$order_no = $data['order_no'];
+		$company_id = $data['company_id'];
+		$product_id = $data['product_id'];
+		$start_date = $data['start_date'];
+		$end_date = $data['end_date'];
+		$extra_nums = $data['extra_nums'];
+		$price = $data['price'];
+		$extra_price = $data['extra_price'];
+		$total_price = $data['total_price'];
+		$is_free = $data['is_free'];
+		$valid = $data['valid'];
+		$create_ip = $data['create_ip'];
+		$sql = "INSERT INTO `ek_order` (`order_no`, `company_id`, `product_id`, `start_date`, `end_date`, `extra_nums`, `price`, `extra_price`, `total_price`, `is_free`, `valid`, `create_time`, `create_ip`, `update_time`, `payment_time`, `pay_note`) 
+VALUES ('$order_no', '$company_id', '$product_id', '$start_date', '$end_date', '$extra_nums', '$price', '$extra_price', '$total_price', '$is_fee', '$valid', NOW(), '', '$create_ip', '', '')";
+		//echo $sql;exit;
+		$this->db->query($sql);
+		$role_id_1 = $this->db->lastInsertId();
+		return $role_id_1;
+	}
+
+	public function getOrderById($orderId) {
 		$list = array();
 
-		$sql = "SELECT `company_id` AS companyId, `company_no` AS companyNo, `company_name` AS companyName, 
-					`contact_name` AS contactName, `email`, `industry_id` AS industryId, `valid`, `product_id` AS productId, 
-					`recommand_id` AS recommandId
-				FROM `ek_company` 
-				WHERE `company_id` = '".$companyId."'";
+		$sql = "SELECT * FROM `ek_order` WHERE `order_id` = '".$orderId."'";
 
 		$stmt = $this->db->query($sql, array($phone));
 		if ($row = $stmt->fetch()) {
 			$list = $row;
 		}
 
-		return $list;
-	}
-	public function getList()
-	{
-		$list = array();
-
-		$sql = "SELECT `product_id` AS productId, `name`, `line_price` AS linePrice, 
-						`max_people` AS maxPeople, `price`, `months`, `add_price` AS addPrice,
-						`comment`, `sale_tag` AS saleTag, `server_contents` AS serverContents,
-						`server_ids` AS serverIds, `valid`
-				FROM `{$this->tableProduct['name']}`
-				WHERE `valid` = '1' 
-				ORDER BY `ord` ASC,`product_id` DESC";
-
-		if ($stmt = $this->db->query($sql)) {
-			while ($row = $stmt->fetch()) {
-
-				$row['serverContents'] = explode('|', $row['serverContents']);
-
-				$list[] = $row;
-			}
-		}
-
-		return $list;
-	}
-
-	/**
-	 * 获取服务选项
-	 */
-	public function getServerList($serverIds = '')
-	{
-		$list = array();
-
-		$sql = "SELECT `server_id`, `name` FROM `{$this->tableServer['name']}`
-				WHERE `valid` = 1";
-				
-		if ($serverIds != '') {
-			$sql .= " AND `server_id` IN ({$serverIds})";
-		}
-
-		if ($stmt = $this->db->query($sql)) {
-			while ($row = $stmt->fetch()) {
-				$list[] = $row;
-			}
-		}
-		
 		return $list;
 	}
 }

@@ -58,15 +58,27 @@ class ConfirmController extends Fuse_Controller
 		//$data['itemList'] = $this->model->getList();
 		//$data['serverList'] = $this->model->getServerList();
 
-        // 企业信息
-        $company = $this->model->getCompany($this->session->data['company_id']);
-
-        $data['companyName'] = $this->session->data['companyName'] = $company['companyName'];
+        $product = $this->session->data['product'];
+        $data['companyName'] = $this->session->data['companyName'];
         //$data['version'] = $this->session->data['version'] = 'team';
         $data['num'] = $this->session->data['num'];
         $data['years'] = $this->session->data['years'];
         $data['perprice'] = $this->session->data['perprice'];
         $data['total'] = $this->session->data['total'];
+
+        list($usec, $sec) = explode(" ", microtime());
+        $data['order_no'] = date("Ym").substr($usec, 2, 6);
+        $data['company_id'] = $this->session->data['company_id'];
+        $data['product_id'] = $product['product_id'];
+        $data['start_date'] = $product['create_time'];
+        $data['end_date'] = date("Y-m-d H:i:s", strtotime("+1 year", strtotime($product['create_time'])));
+        $data['extra_nums'] = $this->session->data['num'];
+        $data['price'] = $this->session->data['perprice'];
+        $data['total_price'] = $data['extra_price'] = $this->session->data['total'];
+        $data['create_ip'] = $_SERVER['REMOTE_ADDR'];
+
+        // 生成订单
+        $data['orderId'] = $this->session->data['orderId'] = $this->model->addOrder($data);
 
         // 页面信息展示
 		$view 			= $this->createView();

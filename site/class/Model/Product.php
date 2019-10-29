@@ -64,5 +64,35 @@ class Model_Product extends Fuse_Model
 		
 		return $list;
 	}
+
+	public function getCompany($companyId) {
+		$list = array();
+
+		$sql = "SELECT `company_id` AS companyId, `company_no` AS companyNo, `company_name` AS companyName, 
+					`contact_name` AS contactName, `email`, `industry_id` AS industryId, `valid`, `product_id` AS productId, 
+					`recommand_id` AS recommandId
+				FROM `ek_company` 
+				WHERE `company_id` = '".$companyId."'";
+
+		$stmt = $this->db->query($sql, array($phone));
+		if ($row = $stmt->fetch()) {
+			$list = $row;
+		}
+
+		return $list;
+	}
+
+	public function getProductById($productId) {
+		$list = array();
+
+		$sql = "SELECT * FROM `ek_product` WHERE `product_id` = '".$productId."'";
+
+		$stmt = $this->db->query($sql, array($phone));
+		if ($row = $stmt->fetch()) {
+			$list = $row;
+		}
+
+		return $list;
+	}
 }
 ?>

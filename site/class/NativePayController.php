@@ -58,10 +58,11 @@ class NativePayController extends Fuse_Controller
         //$data['itemList'] = $this->model->getList();
         //$data['serverList'] = $this->model->getServerList();
 
-        // 企业信息
-        $company = $this->model->getCompany($this->session->data['company_id']);
-
-        $data['companyName'] = $this->session->data['companyName'] = $company['companyName'];
+        // 订单信息
+        $order = $this->model->getOrderById($this->session->data['orderId']);
+//ECHO '<PRE>';PRINT_r($order);exit;
+        $product = $this->session->data['product'];
+        $data['companyName'] = $this->session->data['companyName'];
         //$data['version'] = $this->session->data['version'] = 'team';
         $data['num'] = $this->session->data['num'];
         $data['years'] = $this->session->data['years'];
@@ -70,16 +71,14 @@ class NativePayController extends Fuse_Controller
 
         $data['body'] = "商品描述";
         $data['attach'] = "附加数据"; // 可作为自定义参数使用
-        $data['out_trade_no'] = "sdkphp123456789".date("YmdHis"); //商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|* 且在同一个商户号下唯一。
-        $data['total_fee'] = '1';$this->session->data['total']; // 订单总金额，单位为分
+        $data['out_trade_no'] = $order['order_no']; //商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|* 且在同一个商户号下唯一。
+        $data['total_fee'] = (int)$order['total_price'] * 100; // 订单总金额，单位为分
         $data['time_start'] = date("YmdHis");
         $data['expire_time'] = '600'; // 订单失效时间
         $data['time_expire'] = date("YmdHis", time() + $data['expire_time']);
         //$data['notify_url'] = "http://paysdk.weixin.qq.com/notify.php";//异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。
         $data['notify_url'] = "http://www.easyko.cn/site/library/wxpay/notify.php";
-        $data['product_id'] = "123456789";
-
-       // echo '<pre>';print_r($data);exit;
+        $data['product_id'] = $product['product_id'];
 
         // 入参
         $input = new WxPayUnifiedOrder();
@@ -95,12 +94,13 @@ class NativePayController extends Fuse_Controller
         $input->SetProduct_id($data['product_id']);
 
         $result = $this->GetPayUrl($input);
-        $url = $result["code_url"];
+        $data['url'] = $result["code_url"];
+        $data['total_fee'] = $data['total_fee']/100;
 
         // 页面信息展示
         $view 			= $this->createView();
         $view->formhash = Config_App::formhash('checkout');
-        $view->url 	= $url;
+        $view->data 	= $data;
         $view->title	= $this->language['title'];
         $view->display('../checkout/payment.html');
     }
@@ -160,6 +160,5 @@ class NativePayController extends Fuse_Controller
         }
         return false;
     }
-
 }
 ?>
