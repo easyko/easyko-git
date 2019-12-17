@@ -5,4 +5,4 @@
 	img
 	js
 	site
-	index.php
+	index.phps
