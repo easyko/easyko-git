@@ -9,3 +9,6 @@ site/template/compile/
 # 忽略日志文件
 site/library/wxpay/logs/
 site/library/logs/
+
+# 忽略微信配置文件
+site/library/wxpay/WxPay.Config*
