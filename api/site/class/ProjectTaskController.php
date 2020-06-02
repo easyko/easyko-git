@@ -96,7 +96,10 @@ class ProjectTaskController extends CommonController
 	}
 
 	/**
-	 * 查询除项目单文件以外的其它文件
+	 * 查询除项目单文件以外的其它文件，如项目资料
+	 * 
+	 * projectFile|projectContractFile|projectProposalFile|projectMeetingNoteFile|projectTaskFile
+ 	 * 项目资料|合同|项目提案资料|会议纪要|项目任务单资料
 	 */ 
 	private function taskProjectFileListByType($companyId, $projectNo, $type)
 	{

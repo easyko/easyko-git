@@ -47,7 +47,7 @@ class LoginController extends CommonController
 
 		$row = $this->model->getLogin($username);
 		if (empty($row)) {
-			die(json_encode(array('code'=> '2222', 'message' => '用户名不存在', 'data' => '')));
+			die(json_encode(array('code'=> '2222', 'message' => '账号不正确[01]', 'data' => '')));
 		}
 	
 		// 判断对应公司有效期
@@ -62,11 +62,11 @@ class LoginController extends CommonController
 		}
 
 		if (!$row['valid']) {
-			die(json_encode(array('code'=> '5555', 'message' => '此用户已被删除', 'data' => '')));
+			die(json_encode(array('code'=> '5555', 'message' => '此用户已被禁止登录', 'data' => '')));
 		}
 
 		if ((md5($passwd . $row['randStr'])) != $row['password']) {
-			die(json_encode(array('code'=> '6666', 'message' => '密码输入有误', 'data' => '')));
+			die(json_encode(array('code'=> '6666', 'message' => '账号不正确[02]', 'data' => '')));
 		}
 
 		$this->model->update(
